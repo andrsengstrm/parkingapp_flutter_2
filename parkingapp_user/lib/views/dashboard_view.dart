@@ -68,7 +68,7 @@ class _DashboardViewState extends State<DashboardView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Dashboard", style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text("Dashboard", style: TextStyle(fontWeight: FontWeight.bold)),
           Column(
             children: [
               SizedBox(
@@ -80,11 +80,11 @@ class _DashboardViewState extends State<DashboardView> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Text("Antal parkeringar"),
-                    Text(parkingsCount.toString(), style: TextStyle(fontSize: 28))
+                    Text(parkingsCount.toString(), style: const TextStyle(fontSize: 28))
                   ],
                 ),
               ),
-              Container(
+              SizedBox(
                 width: 200,
                 height: 200,
                 child: Column(
@@ -93,7 +93,7 @@ class _DashboardViewState extends State<DashboardView> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Text("Antal fordon"),
-                    Text(vehiclesCount.toString(), style: TextStyle(fontSize: 28))
+                    Text(vehiclesCount.toString(), style: const TextStyle(fontSize: 28))
                   ],
                 ),
               ),

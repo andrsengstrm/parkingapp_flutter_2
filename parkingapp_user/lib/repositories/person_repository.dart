@@ -7,6 +7,7 @@ import 'package:shared/repositories/repository_interface.dart';
 class PersonRepository implements RepositoryInterface<Person> {
   
   var client = http.Client();
+  //client.connectionTimeout = const Duration(seconds: 5);
   final baseUrl = "http://10.0.2.2:8080"; //Helpers().baseUrl;
   final path = "/person";
 
@@ -114,15 +115,15 @@ class PersonRepository implements RepositoryInterface<Person> {
   
   }
 
+
   Future<Person?> getByEmail(String email) async {
 
     dynamic response;
 
     try {
-
       response = await client.get(
         Uri.parse("$baseUrl$path/getbyemail/$email")
-      );
+      ).timeout(const Duration(seconds: 5));
 
     } catch(err) {
 
@@ -137,8 +138,9 @@ class PersonRepository implements RepositoryInterface<Person> {
       return person;
     
     } else {
-    
-      throw Exception("Det gick inte att hämta personen med email $email");
+      
+      return null;
+      //throw Exception("Det gick inte att hämta personen med email $email");
     
     }
   

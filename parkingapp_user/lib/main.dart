@@ -1,18 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:parkingapp_user/views/main_view.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:parkingapp_user/blocs/auth_bloc.dart';
+import 'package:parkingapp_user/blocs/parkings_bloc.dart';
+import 'package:parkingapp_user/blocs/parkingspaces_bloc.dart';
+import 'package:parkingapp_user/blocs/persons_bloc.dart';
+import 'package:parkingapp_user/blocs/vehicles_bloc.dart';
+import 'package:parkingapp_user/account_view.dart';
+import 'package:parkingapp_user/parkings.dart';
+import 'package:parkingapp_user/vehicles_view.dart';
+import 'package:parkingapp_user/login.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    BlocProvider(create: (context) => AuthBloc(), 
+    child: const ParkingApp()));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class ParkingApp extends StatelessWidget {
+  const ParkingApp({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Parkeringsappen',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -32,39 +43,91 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const SafeArea(
-        minimum: EdgeInsets.all(8),
-        child: MainView()
+      home: const MainView()
+    );
+  }
+}
+
+//handle auth
+class MainView extends StatelessWidget {
+  const MainView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+
+    final authState = context.watch<AuthBloc>().state;
+    
+    return switch(authState) {
+      AuthInitial() => const Login(),
+      AuthInProgess() => const Scaffold(body: Center(child: CircularProgressIndicator(strokeWidth: 1))),
+      AuthSuccess() => const MainNav(),
+      AuthFailure(error: String errMsg) => Login(message: errMsg),
+    };
+  }
+}
+
+
+//main nav for app
+class MainNav extends StatefulWidget {
+  const MainNav({super.key});
+
+  @override
+  State<MainNav> createState() => _MainNavState();
+}
+
+class _MainNavState extends State<MainNav> {
+
+  get destinations => const <NavigationDestination>[
+    NavigationDestination(icon: Icon(Icons.local_parking), label:"Parkeringar"),
+    NavigationDestination(icon: Icon(Icons.fire_truck), label:"Fordon"),
+    NavigationDestination(icon: Icon(Icons.person), label:"Konto")
+  ];
+
+  final views = [
+    const ParkingsView(),
+    const VehiclesView(),
+    const AccountView()
+  ];
+
+  int _selectedIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => ParkingsBloc()),
+        BlocProvider(create: (context) => PersonsBloc()),
+        BlocProvider(create: (context) => VehiclesBloc()),
+        BlocProvider(create: (context) => ParkingSpacesBloc())
+      ],
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.blue,
+          title: const Text("Parkeringsappen")
+        ),
+        bottomNavigationBar: NavigationBar(
+          destinations: destinations, 
+          selectedIndex: _selectedIndex,
+          onDestinationSelected: (int index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+        ),
+        body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          padding: const EdgeInsets.all(16),
+          color: Colors.red,
+          child: SafeArea(
+            child: views[_selectedIndex]
+          )
+        ),
       )
     );
   }
 }
 
 
-/*
-class AuthCheck extends StatelessWidget {
-  AuthCheck({super.key});
 
-  final _isAuthenticated = ValueNotifier<bool>(false);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: ValueListenableBuilder<bool>(
-        valueListenable: _isAuthenticated,
-        builder: (BuildContext context, bool isAuthenticated, Widget? child) {
-          return isAuthenticated 
-          ? MainView(onLogout: () {
-            debugPrint("logout");
-            _isAuthenticated.value = false;
-          }) 
-          : LoginView(onLogin: () { 
-            debugPrint("login");
-            _isAuthenticated.value = true;
-          });
-        }
-      ),
-    );
-  }
-}
-*/

@@ -4,9 +4,7 @@ import 'package:shared/models/person.dart';
 import 'package:shared/models/vehicle.dart';
 
 class VehiclesView extends StatefulWidget {
-  const VehiclesView({super.key, required this.user});
-
-  final Person user;
+  const VehiclesView({super.key});
 
   @override
   State<VehiclesView> createState() => _VehiclesViewState();
@@ -17,7 +15,7 @@ class _VehiclesViewState extends State<VehiclesView> {
   late Person user;
 
   Person getCurrentUser () {
-    return widget.user;
+    return user;
   }
 
   late Future<List<Vehicle>?> itemList;

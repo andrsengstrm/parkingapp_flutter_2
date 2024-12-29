@@ -3,9 +3,7 @@ import 'package:parkingapp_user/repositories/person_repository.dart';
 import 'package:shared/models/person.dart';
 
 class AccountView extends StatefulWidget {
-  const AccountView({super.key, required this.user});
-
-  final Person user;
+  const AccountView({super.key});
 
   @override
   State<AccountView> createState() => _AccountViewState();
@@ -20,7 +18,7 @@ class _AccountViewState extends State<AccountView> {
   bool editMode = false;
 
   Person getCurrentUser () {
-    return widget.user;
+    return user;
   }
 
   @override

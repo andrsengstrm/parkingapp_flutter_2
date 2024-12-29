@@ -73,8 +73,11 @@ Future<Response> getPersonByEmail(Request request) async {
     final email = request.params['email']!;
     final person = await PersonRepository().getByEmail(email);
     
-    return Response.ok(jsonEncode(person));
-
+    if(person != null) {
+      return Response.ok(jsonEncode(person));
+    } else {
+      return Response.notFound(null);
+    }
   } catch(err) {
 
     print(err);
