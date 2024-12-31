@@ -19,7 +19,7 @@ class ParkingsList extends StatelessWidget {
     var state = context.watch<ParkingsBloc>().state;
 
     switch(state) {
-      case ParkingsSuccess(parkingsList: var list): 
+      case GetParkingsByUserSuccess(parkingsList: var list): 
         return parkingsList(context, list);
       default: 
         return const SizedBox.shrink();

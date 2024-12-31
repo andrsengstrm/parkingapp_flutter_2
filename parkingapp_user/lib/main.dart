@@ -7,13 +7,16 @@ import 'package:parkingapp_user/blocs/persons_bloc.dart';
 import 'package:parkingapp_user/blocs/vehicles_bloc.dart';
 import 'package:parkingapp_user/account_view.dart';
 import 'package:parkingapp_user/parkings.dart';
-import 'package:parkingapp_user/vehicles_view.dart';
+import 'package:parkingapp_user/vehicles.dart';
 import 'package:parkingapp_user/login.dart';
 
 void main() {
   runApp(
-    BlocProvider(create: (context) => AuthBloc(), 
-    child: const ParkingApp()));
+    BlocProvider(
+      create: (context) => AuthBloc(), 
+      child: const ParkingApp()
+    )
+  );
 }
 
 class ParkingApp extends StatelessWidget {
@@ -40,7 +43,7 @@ class ParkingApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
         useMaterial3: true,
       ),
       home: const MainView()
@@ -56,14 +59,18 @@ class MainView extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final authState = context.watch<AuthBloc>().state;
-    
-    return switch(authState) {
-      AuthInitial() => const Login(),
-      AuthInProgess() => const Scaffold(body: Center(child: CircularProgressIndicator(strokeWidth: 1))),
-      AuthSuccess() => const MainNav(),
-      AuthFailure(error: String errMsg) => Login(message: errMsg),
-    };
+    switch(authState) {
+      case AuthInitial():
+        return const Login();
+      case AuthInProgess():
+       return const Scaffold(body: Center(child: CircularProgressIndicator(strokeWidth: 1)));
+      case AuthSuccess():
+        return const MainNav();
+      case AuthFailure(error: String errMsg):
+       return Login(message: errMsg);
+    }
   }
+
 }
 
 
@@ -103,7 +110,7 @@ class _MainNavState extends State<MainNav> {
       ],
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.blue,
+          //backgroundColor: Colors.blue,
           title: const Text("Parkeringsappen")
         ),
         bottomNavigationBar: NavigationBar(
@@ -118,8 +125,8 @@ class _MainNavState extends State<MainNav> {
         body: Container(
           width: double.infinity,
           height: double.infinity,
-          padding: const EdgeInsets.all(16),
-          color: Colors.red,
+          padding: const EdgeInsets.all(0),
+          //color: Colors.red,
           child: SafeArea(
             child: views[_selectedIndex]
           )

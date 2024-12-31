@@ -39,7 +39,7 @@
     },
     {
       "id": "2:7971679284233146659",
-      "lastPropertyId": "3:4926862837850440094",
+      "lastPropertyId": "4:321528628707031412",
       "name": "ParkingSpace",
       "properties": [
         {
@@ -57,6 +57,11 @@
           "id": "3:4926862837850440094",
           "name": "pricePerHour",
           "type": 8
+        },
+        {
+          "id": "4:321528628707031412",
+          "name": "isDeleted",
+          "type": 1
         }
       ],
       "relations": []
@@ -92,7 +97,7 @@
     },
     {
       "id": "5:2852842459744921116",
-      "lastPropertyId": "8:2627394452066168480",
+      "lastPropertyId": "9:1076772852583172796",
       "name": "Vehicle",
       "properties": [
         {
@@ -115,6 +120,11 @@
           "id": "8:2627394452066168480",
           "name": "vehicleType",
           "type": 9
+        },
+        {
+          "id": "9:1076772852583172796",
+          "name": "isDeleted",
+          "type": 1
         }
       ],
       "relations": []

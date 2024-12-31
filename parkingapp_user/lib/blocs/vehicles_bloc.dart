@@ -10,9 +10,14 @@ final class GetVehiclesById extends VehiclesEvent {
   GetVehiclesById({required this.id});
 }
 
-final class GetVehiclesByOwner extends VehiclesEvent {
-  final Person owner;
-  GetVehiclesByOwner({required this.owner});
+final class GetVehiclesByUser extends VehiclesEvent {
+  final Person user;
+  GetVehiclesByUser({required this.user});
+}
+
+final class AddVehicle extends VehiclesEvent {
+  final Vehicle vehicle;
+  AddVehicle({required this.vehicle});
 }
 
 final class UpdateVehicle extends VehiclesEvent {
@@ -35,10 +40,29 @@ final class VehiclesLoading extends VehiclesState {
   VehiclesLoading();
 }
 
-final class VehiclesSuccess extends VehiclesState {
+final class GetVehicleByIdSuccess extends VehiclesState {
   final Vehicle? vehicle;
+  GetVehicleByIdSuccess({this.vehicle});
+}
+
+final class GetVehiclesByUserSuccess extends VehiclesState {
   final List<Vehicle>? vehiclesList;
-  VehiclesSuccess({this.vehicle, this.vehiclesList});
+  GetVehiclesByUserSuccess({this.vehiclesList});
+}
+
+final class AddVehicleSuccess extends VehiclesState {
+  final Vehicle? vehicle;
+  AddVehicleSuccess({this.vehicle});
+}
+
+final class UpdateVehicleSuccess extends VehiclesState {
+  final Vehicle? vehicle;
+  UpdateVehicleSuccess({this.vehicle});
+}
+
+final class DeleteVehicleSuccess extends VehiclesState {
+  final Vehicle? vehicle;
+  DeleteVehicleSuccess({this.vehicle});
 }
 
 final class VehiclesError extends VehiclesState {
@@ -53,7 +77,7 @@ class VehiclesBloc extends Bloc<VehiclesEvent, VehiclesState> {
           try {
             var vehicle = await VehicleRepository().getById(event.id);
             if(vehicle != null) {
-              emit(VehiclesSuccess(vehicle: vehicle));
+              emit(GetVehicleByIdSuccess(vehicle: vehicle));
             } else {
               emit(VehiclesError());
             }
@@ -61,11 +85,23 @@ class VehiclesBloc extends Bloc<VehiclesEvent, VehiclesState> {
             emit(VehiclesError());
           }
 
-        case GetVehiclesByOwner():
+        case GetVehiclesByUser():
           try {
-            var vehiclesList = await VehicleRepository().getByOwnerEmail(event.owner.email);
+            var vehiclesList = await VehicleRepository().getByOwnerEmail(event.user.email);
             if(vehiclesList != null) {
-              emit(VehiclesSuccess(vehiclesList: vehiclesList));
+              emit(GetVehiclesByUserSuccess(vehiclesList: vehiclesList));
+            } else {
+              emit(VehiclesError());
+            }
+          } catch(err) {
+            emit(VehiclesError());
+          }
+
+        case AddVehicle():
+          try {
+            var vehicle = await VehicleRepository().add(event.vehicle);
+            if(vehicle != null) {
+              emit(AddVehicleSuccess(vehicle: vehicle)); 
             } else {
               emit(VehiclesError());
             }
@@ -74,9 +110,30 @@ class VehiclesBloc extends Bloc<VehiclesEvent, VehiclesState> {
           }
 
         case UpdateVehicle():
-          // TODO: Handle this case.
+          try {
+            var vehicle = await VehicleRepository().update(event.vehicle.id, event.vehicle);
+            if(vehicle != null) {
+              emit(UpdateVehicleSuccess(vehicle: vehicle));
+            } else {
+              emit(VehiclesError());
+            }
+          } catch(err) {
+            emit(VehiclesError());
+          }
+
         case DeleteVehicle():
-          // TODO: Handle this case.
+          try {
+            var vehicle = await VehicleRepository().delete(event.vehicle.id);
+            if(vehicle != null) {
+              emit(DeleteVehicleSuccess(vehicle: vehicle));
+            } else {
+              emit(VehiclesError());
+            }
+          } catch(err) {
+            emit(VehiclesError());
+          }
+
+        
         
       }
 

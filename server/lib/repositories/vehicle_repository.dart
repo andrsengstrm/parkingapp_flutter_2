@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:server/server_config.dart';
 import 'package:shared/models/vehicle.dart';
 import 'package:shared/objectbox.g.dart';
@@ -9,6 +11,7 @@ class VehicleRepository implements RepositoryInterface<Vehicle> {
 
   @override
   Future<Vehicle?> add(Vehicle item) async {
+    item.isDeleted = false;
     itemBox.put(item, mode: PutMode.insert);
     return item;
   }
@@ -19,14 +22,14 @@ class VehicleRepository implements RepositoryInterface<Vehicle> {
   }
 
   Future<List<Vehicle>?> getByOwnerEmail(String email) async {
-    var items = itemBox.getAll().where((v) => v.owner.email == email).toList().cast<Vehicle>();
+    var items = itemBox.getAll().where((v) => v.owner.email == email && !v.isDeleted).toList().cast<Vehicle>();
     return items;
   }
 
 
   @override
   Future<List<Vehicle>?> getAll() async {
-    var itemList = itemBox.getAll().cast<Vehicle>();
+    var itemList = itemBox.getAll().where((v) => !v.isDeleted).cast<Vehicle>().toList();
     return itemList;
   }
 
@@ -40,8 +43,10 @@ class VehicleRepository implements RepositoryInterface<Vehicle> {
   @override
   Future<Vehicle?> delete(int id) async {
     var itemToDelete = itemBox.get(id);
+    itemToDelete.isDeleted = true;
     if(itemToDelete != null) {
-      itemBox.remove(id);
+      itemBox.put(itemToDelete, mode: PutMode.update);
+      //itemBox.remove(id); 
     }
     return itemToDelete;
   }

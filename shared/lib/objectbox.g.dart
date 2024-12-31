@@ -58,7 +58,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
       id: const obx_int.IdUid(2, 7971679284233146659),
       name: 'ParkingSpace',
-      lastPropertyId: const obx_int.IdUid(3, 4926862837850440094),
+      lastPropertyId: const obx_int.IdUid(4, 321528628707031412),
       flags: 0,
       properties: <obx_int.ModelProperty>[
         obx_int.ModelProperty(
@@ -75,6 +75,11 @@ final _entities = <obx_int.ModelEntity>[
             id: const obx_int.IdUid(3, 4926862837850440094),
             name: 'pricePerHour',
             type: 8,
+            flags: 0),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(4, 321528628707031412),
+            name: 'isDeleted',
+            type: 1,
             flags: 0)
       ],
       relations: <obx_int.ModelRelation>[],
@@ -111,7 +116,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
       id: const obx_int.IdUid(5, 2852842459744921116),
       name: 'Vehicle',
-      lastPropertyId: const obx_int.IdUid(8, 2627394452066168480),
+      lastPropertyId: const obx_int.IdUid(9, 1076772852583172796),
       flags: 0,
       properties: <obx_int.ModelProperty>[
         obx_int.ModelProperty(
@@ -133,6 +138,11 @@ final _entities = <obx_int.ModelEntity>[
             id: const obx_int.IdUid(8, 2627394452066168480),
             name: 'vehicleType',
             type: 9,
+            flags: 0),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(9, 1076772852583172796),
+            name: 'isDeleted',
+            type: 1,
             flags: 0)
       ],
       relations: <obx_int.ModelRelation>[],
@@ -246,10 +256,11 @@ obx_int.ModelDefinition getObjectBoxModel() {
         },
         objectToFB: (ParkingSpace object, fb.Builder fbb) {
           final addressOffset = fbb.writeString(object.address);
-          fbb.startTable(4);
+          fbb.startTable(5);
           fbb.addInt64(0, object.id);
           fbb.addOffset(1, addressOffset);
           fbb.addFloat64(2, object.pricePerHour);
+          fbb.addBool(3, object.isDeleted);
           fbb.finish(fbb.endTable());
           return object.id;
         },
@@ -262,10 +273,13 @@ obx_int.ModelDefinition getObjectBoxModel() {
               .vTableGet(buffer, rootOffset, 6, '');
           final pricePerHourParam =
               const fb.Float64Reader().vTableGet(buffer, rootOffset, 8, 0);
+          final isDeletedParam =
+              const fb.BoolReader().vTableGet(buffer, rootOffset, 10, false);
           final object = ParkingSpace(
               id: idParam,
               address: addressParam,
-              pricePerHour: pricePerHourParam);
+              pricePerHour: pricePerHourParam,
+              isDeleted: isDeletedParam);
 
           return object;
         }),
@@ -321,11 +335,12 @@ obx_int.ModelDefinition getObjectBoxModel() {
           final regIdOffset = fbb.writeString(object.regId);
           final personOwnerOffset = fbb.writeString(object.personOwner);
           final vehicleTypeOffset = fbb.writeString(object.vehicleType);
-          fbb.startTable(9);
+          fbb.startTable(10);
           fbb.addInt64(0, object.id);
           fbb.addOffset(1, regIdOffset);
           fbb.addOffset(6, personOwnerOffset);
           fbb.addOffset(7, vehicleTypeOffset);
+          fbb.addBool(8, object.isDeleted);
           fbb.finish(fbb.endTable());
           return object.id;
         },
@@ -339,8 +354,13 @@ obx_int.ModelDefinition getObjectBoxModel() {
           final vehicleTypeParam =
               const fb.StringReader(asciiOptimization: true)
                   .vTableGet(buffer, rootOffset, 18, '');
+          final isDeletedParam =
+              const fb.BoolReader().vTableGet(buffer, rootOffset, 20, false);
           final object = Vehicle(
-              id: idParam, regId: regIdParam, vehicleType: vehicleTypeParam)
+              id: idParam,
+              regId: regIdParam,
+              vehicleType: vehicleTypeParam,
+              isDeleted: isDeletedParam)
             ..personOwner = const fb.StringReader(asciiOptimization: true)
                 .vTableGet(buffer, rootOffset, 16, '');
 
@@ -387,6 +407,10 @@ class ParkingSpace_ {
   /// See [ParkingSpace.pricePerHour].
   static final pricePerHour =
       obx.QueryDoubleProperty<ParkingSpace>(_entities[1].properties[2]);
+
+  /// See [ParkingSpace.isDeleted].
+  static final isDeleted =
+      obx.QueryBooleanProperty<ParkingSpace>(_entities[1].properties[3]);
 }
 
 /// [Person] entity fields to define ObjectBox queries.
@@ -425,4 +449,8 @@ class Vehicle_ {
   /// See [Vehicle.vehicleType].
   static final vehicleType =
       obx.QueryStringProperty<Vehicle>(_entities[3].properties[3]);
+
+  /// See [Vehicle.isDeleted].
+  static final isDeleted =
+      obx.QueryBooleanProperty<Vehicle>(_entities[3].properties[4]);
 }

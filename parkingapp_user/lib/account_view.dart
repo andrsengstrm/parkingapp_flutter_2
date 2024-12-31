@@ -12,20 +12,20 @@ class AccountView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final PersonsState state = context.watch<PersonsBloc>().state;
-    return switch(state) {
-      //AuthIsAuth(user: Person loggedInUser) => accountMainView(context, loggedInUser),
-      //_ => const Login()
-      PersonsSuccess(user: Person user) => accountMainView(context, user),
-      // TODO: Handle this case.
-      _ => const Text("Ett fel har uppstått")
-
-    };
+    final AuthState authState = context.watch<AuthBloc>().state;
+    switch(authState) {
+      case AuthSuccess(user: Person user):
+        return accountMainView(context, user);
+      default: 
+        return const Login();
+    }
   }
 
   Widget accountMainView(BuildContext context, user) {
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
     return Container(
-      color: Colors.amber,
+      padding: const EdgeInsets.all(16),
+      //color: Colors.amber,
       child: Form(
         key: formKey,
         child: Column(
@@ -102,6 +102,16 @@ class AccountView extends StatelessWidget {
               },
               child: const Text("Spara"),
             ),
+            const SizedBox(height: 16),
+              TextButton(
+                style: TextButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 50),
+                ),
+                child: const Text("Logga ut"),
+                onPressed: () { 
+                  context.read<AuthBloc>().add(AuthLogout());
+                },
+              )
           ],
         )
       )

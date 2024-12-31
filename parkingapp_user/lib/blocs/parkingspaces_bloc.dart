@@ -33,10 +33,24 @@ final class ParkingSpacesLoading extends ParkingSpacesState {
   ParkingSpacesLoading();
 }
 
-final class ParkingSpacesSuccess extends ParkingSpacesState {
+final class GetParkingSpaceByIdSuccess extends ParkingSpacesState {
   final ParkingSpace? parkingSpace;
+  GetParkingSpaceByIdSuccess({ this.parkingSpace });
+}
+
+final class GetAllParkingSpacesSuccess extends ParkingSpacesState {
   final List<ParkingSpace>? parkingSpacesList;
-  ParkingSpacesSuccess({ this.parkingSpace, this.parkingSpacesList });
+  GetAllParkingSpacesSuccess({ this.parkingSpacesList });
+}
+
+final class UpdateParkingSpaceSuccess extends ParkingSpacesState {
+  final ParkingSpace? parkingSpace;
+  UpdateParkingSpaceSuccess({ this.parkingSpace });
+}
+
+final class DeleteParkingSpaceSuccess extends ParkingSpacesState {
+  final ParkingSpace? parkingSpace;
+  DeleteParkingSpaceSuccess({ this.parkingSpace });
 }
 
 final class ParkingSpacesError extends ParkingSpacesState {
@@ -51,7 +65,7 @@ final class ParkingSpacesBloc extends Bloc<ParkingSpacesEvent, ParkingSpacesStat
           try {
             var parkingSpace = await ParkingSpaceRepository().getById(event.id);
             if(parkingSpace != null) {
-              emit(ParkingSpacesSuccess(parkingSpace: parkingSpace));
+              emit(GetParkingSpaceByIdSuccess(parkingSpace: parkingSpace));
             } else {
               emit(ParkingSpacesError());
             }
@@ -63,7 +77,7 @@ final class ParkingSpacesBloc extends Bloc<ParkingSpacesEvent, ParkingSpacesStat
           try {
             var parkingSpacesList = await ParkingSpaceRepository().getAll();
             if(parkingSpacesList != null) {
-              emit(ParkingSpacesSuccess(parkingSpacesList: parkingSpacesList));
+              emit(GetAllParkingSpacesSuccess(parkingSpacesList: parkingSpacesList));
             } else {
               emit(ParkingSpacesError());
             }
@@ -72,9 +86,29 @@ final class ParkingSpacesBloc extends Bloc<ParkingSpacesEvent, ParkingSpacesStat
           }
 
         case UpdateParkingSpace():
-          // TODO: Handle this case.
+          try {
+            var updatedParkingSpace = await ParkingSpaceRepository().update(event.parkingSpace.id, event.parkingSpace);
+            if(updatedParkingSpace != null) {
+              emit(UpdateParkingSpaceSuccess(parkingSpace: updatedParkingSpace));
+            } else {
+              emit(ParkingSpacesError());
+            }
+          } catch(err) {
+            emit(ParkingSpacesError());
+          }
+          
         case DeleteParkingSpace():
-          // TODO: Handle this case.
+          try {
+            var deletedParkingSpace = await ParkingSpaceRepository().update(event.parkingSpace.id, event.parkingSpace);
+            if(deletedParkingSpace != null) {
+              emit(DeleteParkingSpaceSuccess(parkingSpace: deletedParkingSpace));
+            } else {
+              emit(ParkingSpacesError());
+            }
+          } catch(err) {
+            emit(ParkingSpacesError());
+          }
+          
       }
     });
   }

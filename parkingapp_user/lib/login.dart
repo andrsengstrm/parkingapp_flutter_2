@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parkingapp_user/blocs/auth_bloc.dart';
-import 'package:provider/provider.dart';
+import 'package:parkingapp_user/blocs/persons_bloc.dart';
+import 'package:shared/models/person.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key, this.message});
@@ -25,28 +26,31 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.all(32),
-        color: Colors.white,
-        child: Center(
-          child: Wrap(
-            children: [
-              loginMode == LoginMode.create
-              ? _CreateUserForm(
-                  alternateLoginMode: LoginMode.login,
-                  onLoginModeChanged: (value) => _onLoginModeChanged(value)
-                )
-              : _LoginUserForm(
-                  alternateLoginMode: LoginMode.create,
-                  onLoginModeChanged: (value) => _onLoginModeChanged(value)
-                ),
-              message != null 
-              ? Text(message!, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold))
-              : const SizedBox.shrink()
-
-            ],
-          )
+    return BlocProvider(
+      create: (context) => PersonsBloc(),
+      child: Scaffold(
+        body: Container(
+          padding: const EdgeInsets.all(32),
+          color: Colors.white,
+          child: Center(
+            child: Wrap(
+              children: [
+                loginMode == LoginMode.create
+                ? _CreateUserForm(
+                    alternateLoginMode: LoginMode.login,
+                    onLoginModeChanged: (value) => _onLoginModeChanged(value)
+                  )
+                : _LoginUserForm(
+                    alternateLoginMode: LoginMode.create,
+                    onLoginModeChanged: (value) => _onLoginModeChanged(value)
+                  ),
+                message != null 
+                ? Text(message!, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold))
+                : const SizedBox.shrink()
+      
+              ],
+            )
+          ),
         ),
       ),
     );
@@ -140,9 +144,11 @@ class _CreateUserForm extends StatelessWidget {
             onPressed: () async {
               if(loginFormKey.currentState!.validate()) {
                 loginFormKey.currentState!.save();
-                
-                //TODO! create a user
-                
+                if(email != null && personId != null && name != null) {
+                  var userToAdd = Person(email: email, personId: personId!, name: name!);
+                  context.read<PersonsBloc>().add(CreatePerson(person: userToAdd));
+                  context.read<AuthBloc>().add(AuthLogin(userToAdd.email!));
+                }
               } 
             },
             child: const Text("Skapa konto")

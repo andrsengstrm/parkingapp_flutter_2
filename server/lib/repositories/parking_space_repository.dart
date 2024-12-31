@@ -9,6 +9,7 @@ class ParkingSpaceRepository implements RepositoryInterface<ParkingSpace> {
 
   @override
   Future<ParkingSpace?> add(ParkingSpace item) async {
+    item.isDeleted = false;
     itemBox.put(item, mode: PutMode.insert);
     return item;
   }
@@ -20,7 +21,7 @@ class ParkingSpaceRepository implements RepositoryInterface<ParkingSpace> {
 
   @override
   Future<List<ParkingSpace>?> getAll() async {
-    var itemList = itemBox.getAll().cast<ParkingSpace>();
+    var itemList = itemBox.getAll().where((v) => !v.isDeleted).cast<ParkingSpace>().toList();
     return itemList;
   }
 
@@ -33,8 +34,10 @@ class ParkingSpaceRepository implements RepositoryInterface<ParkingSpace> {
   @override
   Future<ParkingSpace?> delete(int id) async {
     var itemToDelete = itemBox.get(id);
+    itemToDelete.isDeleted = true;
     if(itemToDelete != null) {
-      itemBox.remove(id);
+      itemBox.put(itemToDelete, mode: PutMode.update);
+      //itemBox.remove(id);
     }
     return itemToDelete;
   }

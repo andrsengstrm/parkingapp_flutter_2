@@ -13,7 +13,7 @@ class Vehicle {
   int id; 
   String regId;
   String vehicleType;
-  //int ownerId;
+  bool isDeleted;
   Person? owner;
   
   String get personOwner {
@@ -24,9 +24,9 @@ class Vehicle {
     owner = Person.fromJson(jsonDecode(json));  
   }
 
-  
   //constructor with optional id, if not supplied a uid is created
-  Vehicle({int? id, required this.regId, required this.vehicleType, this.owner }) : id = id ?? -1;
+  Vehicle({int? id, required this.regId, required this.vehicleType, bool? isDeleted, this.owner }) 
+    : id = id ?? -1, isDeleted = isDeleted ?? false;
 
   //deserialize from json
   factory Vehicle.fromJson(Map<String,dynamic> json) {
@@ -34,6 +34,7 @@ class Vehicle {
       id: json["id"],
       regId: json["regId"],
       vehicleType: json["vehicleType"],
+      isDeleted: json["isDeleted"],
       owner: Person.fromJson(json["owner"])
     );
   
@@ -44,6 +45,7 @@ class Vehicle {
     "id": id,
     "regId": regId,
     "vehicleType": vehicleType,
+    "isDeleted": isDeleted,
     "owner": owner?.toJson()
   };
 

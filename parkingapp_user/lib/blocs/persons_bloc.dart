@@ -13,6 +13,11 @@ final class GetAllPersons extends PersonsEvent {
   GetAllPersons();
 }
 
+final class CreatePerson extends PersonsEvent {
+  final Person person;
+  CreatePerson({required this.person});
+}
+
 final class UpdatePerson extends PersonsEvent {
   final Person person;
   UpdatePerson({required this.person});
@@ -29,10 +34,29 @@ final class PersonsInitial extends PersonsState {}
 
 final class PersonsLoading extends PersonsState {}
 
-final class PersonsSuccess extends PersonsState {
+final class CreatePersonSuccess extends PersonsState {
   final Person? user;
+  CreatePersonSuccess({this.user});
+}
+
+final class UpdatePersonSuccess extends PersonsState {
+  final Person? user;
+  UpdatePersonSuccess({this.user}); 
+}
+
+final class DeletePersonSuccess extends PersonsState {
+  final Person? user;
+  DeletePersonSuccess({this.user});
+}
+
+final class GetPersonSuccess extends PersonsState {
+  final Person? user;
+  GetPersonSuccess({this.user});
+}
+
+final class GetAllPersonsSuccess extends PersonsState {
   final List<Person>? usersList;
-  PersonsSuccess({ this.user, this.usersList });
+  GetAllPersonsSuccess({ this.usersList });
 }
 
 final class PersonsError extends PersonsState {}
@@ -45,7 +69,7 @@ class PersonsBloc extends Bloc<PersonsEvent, PersonsState> {
           try {
             var user = await PersonRepository().getById(event.id);
             if(user != null) {
-              emit(PersonsSuccess(user: user));
+              emit(GetPersonSuccess(user: user));
             } else {
               emit(PersonsError());
             }
@@ -57,7 +81,7 @@ class PersonsBloc extends Bloc<PersonsEvent, PersonsState> {
           try {
             var usersList = await PersonRepository().getAll();
             if(usersList != null) {
-              emit(PersonsSuccess(usersList: usersList));
+              emit(GetAllPersonsSuccess(usersList: usersList));
             } else {
               emit(PersonsError());
             }
@@ -65,11 +89,23 @@ class PersonsBloc extends Bloc<PersonsEvent, PersonsState> {
             emit(PersonsError());
           }
 
+        case CreatePerson():
+          try {
+            var newUser = await PersonRepository().add(event.person);
+            if(newUser != null) {
+              emit(GetPersonSuccess(user: newUser));
+            } else {
+              emit(PersonsError());
+            }
+          } catch(err) {
+            emit(PersonsError());
+          }  
+
         case UpdatePerson():
           try {
             var updatedUser = await PersonRepository().update(event.person.id, event.person);
             if(updatedUser != null) {
-              emit(PersonsSuccess(user: updatedUser));
+              emit(UpdatePersonSuccess(user: updatedUser));
             } else {
               emit(PersonsError());
             }
@@ -81,15 +117,14 @@ class PersonsBloc extends Bloc<PersonsEvent, PersonsState> {
           try {
             var deletedUser = await PersonRepository().delete(event.person.id);
             if(deletedUser != null) {
-              emit(PersonsSuccess(user: deletedUser));
+              emit(DeletePersonSuccess(user: deletedUser));
             } else {
               emit(PersonsError());
             }
           } catch(err) {
             emit(PersonsError());
           }  
-        
-       
+
       }
     });
   }

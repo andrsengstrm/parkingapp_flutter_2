@@ -41,7 +41,7 @@ class ParkingsStartParking extends StatelessWidget {
 
     final ParkingSpacesState parkingSpacesState = context.watch<ParkingSpacesBloc>().state;
     switch(parkingSpacesState) {
-      case ParkingSpacesSuccess(parkingSpacesList: List<ParkingSpace> list):
+      case GetAllParkingSpacesSuccess(parkingSpacesList: List<ParkingSpace> list):
         parkingSpacesList = list;
       default:
         //
