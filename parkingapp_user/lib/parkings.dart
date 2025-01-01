@@ -15,7 +15,7 @@ class ParkingsView extends StatelessWidget {
   
   const ParkingsView({super.key});
 
-  @override
+@override
   Widget build(BuildContext context) {
     final AuthState authState = context.watch<AuthBloc>().state;
     switch(authState) {
@@ -155,7 +155,7 @@ class _ParkingsList extends StatelessWidget {
               )
             : const Text("Det finns inga aktiva parkeringar"),
             const SizedBox(height: 16),
-            const Text("Tidigare parkeringar", style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text("Avslutade parkeringar", style: TextStyle(fontWeight: FontWeight.bold)),
             finishedParkings.isNotEmpty
             ? ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
@@ -167,10 +167,7 @@ class _ParkingsList extends StatelessWidget {
                       title: Text("${finishedParkings[index].vehicle!.regId} - ${finishedParkings[index].parkingSpace!.address}"),
                       onTap: () async {
                           var updatedParking = await showEditParkingDialog(context, finishedParkings[index]);
-                          debugPrint("Trying to update parking...");
-                          //debugPrint(updatedParking!.endTime);
                           if(updatedParking != null) {
-                            debugPrint("Updating parking...");
                             if(context.mounted) {
                               context.read<ParkingsBloc>().add(UpdateParking(updatedParking));
                               context.read<ParkingsBloc>().add(GetParkingsByUser(user:user));
@@ -181,7 +178,7 @@ class _ParkingsList extends StatelessWidget {
                   );
                 },
               )
-            : const Text("Det finns inga tidigare parkeringar"),
+            : const Text("Det finns inga avslutade parkeringar"),
           ],
         ),
       ),
