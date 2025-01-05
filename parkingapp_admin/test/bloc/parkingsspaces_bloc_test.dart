@@ -37,6 +37,22 @@ void main() {
       }
     );
 
+    blocTest<ParkingSpacesBloc, ParkingSpacesState>(
+      'Test that CreateParkingSpace emits ParkingSpacesError when null is returned',
+      setUp: (){
+        when(() => parkingSpaceRepository.create(any()))
+          .thenAnswer((_) async => null);
+      },
+      build: () => ParkingSpacesBloc(repository: parkingSpaceRepository),
+      act: (bloc) => bloc.add(CreateParkingSpace(parkingSpace: parkingSpace)),
+      expect: () => [
+        ParkingSpacesError()
+      ],
+      verify: (_) {
+        verify(() => parkingSpaceRepository.create(any())).called(1);
+      }
+    );
+
   });
 
 }

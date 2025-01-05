@@ -43,6 +43,22 @@ void main() {
       }
     );
 
+    blocTest<ParkingsBloc, ParkingsState>(
+      'Test that ReadParkingById emits ParkingsError when null is returned',
+      setUp: (){
+        when(() => parkingRepository.readById(any()))
+          .thenAnswer((_) async => null);
+      },
+      build: () => ParkingsBloc(repository: parkingRepository),
+      act: (bloc) => bloc.add(ReadParkingById(id:1)),
+      expect: () => [
+        ParkingsError()
+      ],
+      verify: (_) {
+        verify(() => parkingRepository.readById(any())).called(1);
+      }
+    );
+
   });
 
 }

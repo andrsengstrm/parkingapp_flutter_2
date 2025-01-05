@@ -37,6 +37,22 @@ void main() {
       }
     );
 
+    blocTest<PersonsBloc, PersonsState>(
+      'Test that UpdatePerson emits PersonsError when null is returned',
+      setUp: (){
+        when(() => personRepository.update(any(),any()))
+          .thenAnswer((_) async => null);
+      },
+      build: () => PersonsBloc(repository: personRepository),
+      act: (bloc) => bloc.add(UpdatePerson(person: newPerson)),
+      expect: () => [
+        PersonsError()
+      ],
+      verify: (_) {
+        verify(() => personRepository.update(any(),any())).called(1);
+      }
+    );
+
   });
 
 }

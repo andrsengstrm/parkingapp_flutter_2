@@ -37,6 +37,22 @@ void main() {
       }
     );
 
+    blocTest<ParkingSpacesBloc, ParkingSpacesState>(
+      'Test that ReacParkingSpaceById emits ParkingSpacesError when null is returned',
+      setUp: (){
+        when(() => parkingSpaceRepository.readById(any()))
+          .thenAnswer((_) async => null);
+      },
+      build: () => ParkingSpacesBloc(repository: parkingSpaceRepository),
+      act: (bloc) => bloc.add(ReadParkingSpaceById(id: 1)),
+      expect: () => [
+        ParkingSpacesError()
+      ],
+      verify: (_) {
+        verify(() => parkingSpaceRepository.readById(any())).called(1);
+      }
+    );
+
   });
 
 }

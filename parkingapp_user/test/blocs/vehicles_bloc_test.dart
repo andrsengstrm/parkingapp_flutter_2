@@ -39,6 +39,22 @@ void main() {
       }
     );
 
+    blocTest<VehiclesBloc, VehiclesState>(
+      'Test that CreateVehicle emits VehiclesError when null is returned',
+      setUp: (){
+        when(() => vehicleRepository.create(any()))
+          .thenAnswer((_) async => null);
+      },
+      build: () => VehiclesBloc(repository: vehicleRepository),
+      act: (bloc) => bloc.add(CreateVehicle(vehicle: newVehicle)),
+      expect: () => [
+        VehiclesError()
+      ],
+      verify: (_) {
+        verify(() => vehicleRepository.create(any())).called(1);
+      }
+    );
+
   });
 
 }

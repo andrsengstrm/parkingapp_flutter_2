@@ -22,7 +22,7 @@ void main() {
     });
 
     blocTest<AuthBloc, AuthState>(
-      'Test that CreatePerson emits PersonsSuccess',
+      'Test that AuthLogin emits AuthSuccess',
       setUp: (){
         when(() => personRepository.readByEmail(any()))
           .thenAnswer((_) async => person);
@@ -32,6 +32,23 @@ void main() {
       expect: () => [
         AuthInProgess(),
         AuthSuccess(user:person)
+      ],
+      verify: (_) {
+        verify(() => personRepository.readByEmail(any())).called(1);
+      }
+    );
+
+    blocTest<AuthBloc, AuthState>(
+      'Test that AuthLogin emits AuthError when null is returned',
+      setUp: (){
+        when(() => personRepository.readByEmail(any()))
+          .thenAnswer((_) async => null);
+      },
+      build: () => AuthBloc(repository: personRepository),
+      act: (bloc) => bloc.add(AuthLogin(email: person.email)),
+      expect: () => [
+        AuthInProgess(),
+        AuthError()
       ],
       verify: (_) {
         verify(() => personRepository.readByEmail(any())).called(1);
