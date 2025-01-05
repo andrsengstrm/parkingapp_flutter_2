@@ -10,8 +10,8 @@ class DashboardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    context.read<ParkingsBloc>().add(GetAllParkings());
-    context.read<ParkingSpacesBloc>().add(GetAllParkingSpaces());
+    context.read<ParkingsBloc>().add(ReadAllParkings());
+    context.read<ParkingSpacesBloc>().add(ReadAllParkingSpaces());
 
     return Container (
       alignment: Alignment.topLeft,

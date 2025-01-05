@@ -5,6 +5,7 @@ import 'package:parkingapp_user/blocs/parkings_bloc.dart';
 import 'package:parkingapp_user/blocs/parkingspaces_bloc.dart';
 import 'package:parkingapp_user/blocs/vehicles_bloc.dart';
 import 'package:parkingapp_user/login.dart';
+import 'package:provider/provider.dart';
 import 'package:shared/helpers/helpers.dart';
 import 'package:shared/models/parking.dart';
 import 'package:shared/models/parking_space.dart';
@@ -31,18 +32,16 @@ class ParkingsView extends StatelessWidget {
     context.read<ParkingsBloc>().add(ReadParkingsByUser(user:user));
     context.read<VehiclesBloc>().add(ReadVehiclesByOwnerEmail(user:user));
     context.read<ParkingSpacesBloc>().add(ReadAllParkingSpaces());
+    context.read<ParkingsBloc>().add(ReadAllParkings());
 
-    return Container(
-      //color: Colors.blue,
-      child: Column(
-        children: [
-          _ParkingsStartParking(user),
-          Expanded(
-            child: _ParkingsList(user) 
-          )
-          //
-        ]
-      ),
+    return Column(
+      children: [
+        _ParkingsStartParking(user),
+        Expanded(
+          child: _ParkingsList(user) 
+        )
+        //
+      ]
     );
   }
 
@@ -59,6 +58,7 @@ class _ParkingsStartParking extends StatelessWidget {
 
     late List<Vehicle> ownerVehiclesList;
     late List<ParkingSpace> parkingSpacesList;
+    late List<Parking> parkingsList;
 
     final VehiclesState vehiclesState = context.watch<VehiclesBloc>().state;
     switch(vehiclesState) {
@@ -76,6 +76,14 @@ class _ParkingsStartParking extends StatelessWidget {
         //
     }
 
+    final ParkingsState parkingsState = context.watch<ParkingsBloc>().state;
+    switch(parkingsState) {
+      case ParkingsSuccess(parkingsList: List<Parking> list):
+        parkingsList = list;
+      default:
+        //
+    } 
+
     return Container(
       padding: const EdgeInsets.all(32),
       child: ElevatedButton(
@@ -83,10 +91,10 @@ class _ParkingsStartParking extends StatelessWidget {
           minimumSize: const Size(240, 240),
         ),
         onPressed: () async {
-          var newParking = await showStartParkingDialog(context, ownerVehiclesList, parkingSpacesList);
+          var newParking = await showStartParkingDialog(context, ownerVehiclesList, parkingSpacesList, parkingsList);
           if(newParking != null) {
             if(context.mounted) {
-              context.read<ParkingsBloc>().add(CreateParking(parking: newParking));
+              context.read<ParkingsBloc>().add(CreateParking(parking: newParking));  
             }
           }
         },
@@ -136,14 +144,23 @@ class _ParkingsList extends StatelessWidget {
                   return Card(
                     child: ListTile(
                       title: Text("${activeParkings[index].vehicle!.regId} - ${activeParkings[index].parkingSpace!.address}"),
-                      onTap: () async {
-                          var updatedParking = await showEditParkingDialog(context, activeParkings[index]);
-                          if(updatedParking != null) {
-                            if(context.mounted) {
-                              context.read<ParkingsBloc>().add(UpdateParking(parking: updatedParking));
-                            }
-                          }
-                      } ,
+                      trailing: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            onPressed: () async {
+                              var updatedParking = await showEditParkingDialog(context, activeParkings[index]);
+                              if(updatedParking != null) {
+                                if(context.mounted) {
+                                  context.read<ParkingsBloc>().add(UpdateParking(parking: updatedParking));
+                                }
+                              }
+                            },
+                            icon: const Icon(Icons.edit)
+                          ),
+                        ]
+                      ),
                     ),
                   );
                 },
@@ -160,15 +177,24 @@ class _ParkingsList extends StatelessWidget {
                   return Card(
                     child: ListTile(
                       title: Text("${finishedParkings[index].vehicle!.regId} - ${finishedParkings[index].parkingSpace!.address}"),
-                      onTap: () async {
-                          var updatedParking = await showEditParkingDialog(context, finishedParkings[index]);
-                          if(updatedParking != null) {
-                            if(context.mounted) {
-                              context.read<ParkingsBloc>().add(UpdateParking(parking: updatedParking));
-                              context.read<ParkingsBloc>().add(ReadParkingsByUser(user:user));
-                            }
-                          }
-                      } ,
+                      trailing: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            onPressed: () async {
+                              var updatedParking = await showEditParkingDialog(context, finishedParkings[index]);
+                              if(updatedParking != null) {
+                                if(context.mounted) {
+                                  context.read<ParkingsBloc>().add(UpdateParking(parking: updatedParking));
+                                  context.read<ParkingsBloc>().add(ReadParkingsByUser(user:user));
+                                }
+                              }
+                            },
+                            icon: const Icon(Icons.info)
+                          ),
+                        ]
+                      ),
                     ),
                   );
                 },
@@ -182,39 +208,35 @@ class _ParkingsList extends StatelessWidget {
 }
 
 
-Future<Parking?>? showStartParkingDialog(BuildContext context, List<Vehicle>? ownerVehiclesList, List<ParkingSpace>? parkingSpacesList ) {
+Future<Parking?>? showStartParkingDialog(BuildContext context, List<Vehicle>? ownerVehiclesList, List<ParkingSpace>? parkingSpacesList, List<Parking>? parkings ) {
 
   Vehicle? selectedVehicle;
   ParkingSpace? selectedParkingSpace;
+  List<ParkingSpace>? availableParkingSpaces = [];
   late Parking? newParking;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-
-  /*
-  Future<List<ParkingSpace>?> getAvailableParkingSpaces() async {
-    var activeParkings = await ParkingRepository().getAll();
+  List<ParkingSpace> getAvailableParkingSpaces(parkings) {
+    //var parkingsState = Provider.of<ParkingsBloc>(context, listen: false).state; //context.watch<ParkingsBloc>().state;
+    parkings = parkings!.where((p) => p.endTime == null).toList();
     var busyParkings = [];
-    for(var i = 0; i < activeParkings!.length; i++) {
-      var p = activeParkings[i];
+    for(var i = 0; i < parkings!.length; i++) {
+      var p = parkings[i];
       if(p.endTime == null) {
         if(!busyParkings.contains(p.parkingSpace!.id)) {
           busyParkings.add(p.parkingSpace!.id);
         }
       }
     }
-
-    late List<ParkingSpace>? availableParkingSpaces = [];
-    for(var i = 0; i < parkingSpaceList!.length; i++) {
-      var p = parkingSpaceList[i];
+    for(var i = 0; i < parkingSpacesList!.length; i++) {
+      var p = parkingSpacesList[i];
       if(!busyParkings.contains(p.id)) {
         availableParkingSpaces.add(p);
       }
     }
     return availableParkingSpaces;
   }
-  */
-  //List<ParkingSpace> selectableParkingSpaceList = getAvailableParkingSpaces();
-
+  
   return showModalBottomSheet(
     context: context,
     builder: (BuildContext context) => Dialog.fullscreen(
@@ -273,7 +295,7 @@ Future<Parking?>? showStartParkingDialog(BuildContext context, List<Vehicle>? ow
                 onChanged: (ParkingSpace? value) {
                   selectedParkingSpace = value!;
                 },
-                items: parkingSpacesList!.map<DropdownMenuItem<ParkingSpace>>((ParkingSpace v) {
+                items: getAvailableParkingSpaces(parkings).map<DropdownMenuItem<ParkingSpace>>((ParkingSpace v) {
                   return DropdownMenuItem<ParkingSpace>(
                     value: v,
                     child: Text(v.address),
@@ -330,7 +352,6 @@ Future<Parking?>? showEditParkingDialog(BuildContext context, Parking selectedPa
     builder: (BuildContext context) => Dialog.fullscreen(
       child: Container(
         padding: const EdgeInsets.all(16),
-        color: Colors.green,
         child: Form(
           key: formKey,
           child: Column(

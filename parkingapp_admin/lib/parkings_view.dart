@@ -37,7 +37,7 @@ class ParkingsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    context.read<ParkingsBloc>().add(GetAllParkings());
+    context.read<ParkingsBloc>().add(ReadAllParkings());
 
     return Stack(
       fit: StackFit.expand,

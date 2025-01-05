@@ -9,7 +9,7 @@ class ParkingSpacesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    context.read<ParkingSpacesBloc>().add(GetAllParkingSpaces());
+    context.read<ParkingSpacesBloc>().add(ReadAllParkingSpaces());
 
     return Container(
       alignment: Alignment.topLeft,

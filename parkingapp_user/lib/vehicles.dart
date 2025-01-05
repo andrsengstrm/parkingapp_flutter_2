@@ -72,16 +72,17 @@ class _VehiclesList extends StatelessWidget {
                   return Card(
                     child: ListTile(
                       title: Text("${list[index].regId}"),
-                      onTap: () async {
-                        var updatedVehicle = await showVehicleDetailsDialog(context, list[index], user);
-                        if(updatedVehicle != null) {
-                          if(context.mounted) {
-                            context.read<VehiclesBloc>().add(UpdateVehicle(vehicle: updatedVehicle));
-                            context.read<VehiclesBloc>().add(ReadVehiclesByOwnerEmail(user:user));
-                          }
-                        }
-                      },
+                      //onTap: () {
+                        //var updatedVehicle = await showVehicleDetailsDialog(context, list[index], user);
+                        //if(updatedVehicle != null) {
+                        //  if(context.mounted) {
+                        //    context.read<VehiclesBloc>().add(UpdateVehicle(vehicle: updatedVehicle));
+                        //    context.read<VehiclesBloc>().add(ReadVehiclesByOwnerEmail(user:user));
+                        //  }
+                        //}
+                      //},
                       trailing: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
