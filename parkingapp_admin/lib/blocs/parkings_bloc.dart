@@ -23,7 +23,7 @@ class ParkingsBloc extends Bloc<ParkingsEvent, ParkingsState>{
             }
 
           case ReadParkingsByUser():
-            var parkingsList = await repository!.readByVehicleOwnerEmail(event.user.email!);
+            var parkingsList = await repository!.readByVehicleOwnerEmail(event.user.email);
             if(parkingsList != null) {
               emit(ParkingsSuccess(parkingsList: parkingsList));
             } else {
