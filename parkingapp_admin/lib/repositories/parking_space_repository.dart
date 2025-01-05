@@ -11,7 +11,7 @@ class ParkingSpaceRepository implements RepositoryInterface<ParkingSpace> {
   final path = "/parkingspace";
   
   @override
-  Future<ParkingSpace?> add(ParkingSpace item) async {
+  Future<ParkingSpace?> create(ParkingSpace item) async {
     
     final body = item.toJson();
     dynamic response;
@@ -46,7 +46,7 @@ class ParkingSpaceRepository implements RepositoryInterface<ParkingSpace> {
 
 
   @override
-  Future<List<ParkingSpace>?> getAll() async {
+  Future<List<ParkingSpace>?> read() async {
     
     dynamic response;
 
@@ -84,7 +84,7 @@ class ParkingSpaceRepository implements RepositoryInterface<ParkingSpace> {
 
 
   @override
-  Future<ParkingSpace?> getById(int id) async {
+  Future<ParkingSpace?> readById(int id) async {
     
     dynamic response;
 

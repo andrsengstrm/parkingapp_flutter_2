@@ -13,7 +13,7 @@ Future<Response> addVehicle(Request request) async {
     final requestBody = await request.readAsString();
 
     final vehicle = Vehicle.fromJson(jsonDecode(requestBody));
-    final addedVehicle = await VehicleRepository().add(vehicle);
+    final addedVehicle = await VehicleRepository().create(vehicle);
     
     return Response.ok(jsonEncode(addedVehicle));
   
@@ -32,7 +32,7 @@ Future<Response> getAllVehicles(Request request) async {
   
     print("Trying to get all vehicles...");
     
-    var vehicleList = await VehicleRepository().getAll();
+    var vehicleList = await VehicleRepository().read();
     
     return Response.ok(jsonEncode(vehicleList));
   
@@ -52,7 +52,7 @@ Future<Response> getVehicleById(Request request) async {
     print("Trying to get vehicle...");
 
     final id = request.params['id']!;
-    final vehicle = await VehicleRepository().getById(int.parse(id));
+    final vehicle = await VehicleRepository().readById(int.parse(id));
     
     return Response.ok(jsonEncode(vehicle));
 
@@ -71,7 +71,7 @@ Future<Response> getVehicleByOwnerEmail(Request request) async {
   
     print("Trying to get vehicles by email...");
     final email = request.params['email']!;
-    var vehicleList = await VehicleRepository().getByOwnerEmail(email);
+    var vehicleList = await VehicleRepository().readByOwnerEmail(email);
     
     return Response.ok(jsonEncode(vehicleList));
   

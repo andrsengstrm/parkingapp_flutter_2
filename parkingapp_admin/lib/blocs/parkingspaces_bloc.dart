@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parkingapp_admin/repositories/parking_space_repository.dart';
 import 'package:shared/models/parking_space.dart';
@@ -39,29 +38,9 @@ final class ParkingSpacesLoading extends ParkingSpacesState {
   ParkingSpacesLoading();
 }
 
-final class GetParkingSpaceByIdSuccess extends ParkingSpacesState {
-  final ParkingSpace? parkingSpace;
-  GetParkingSpaceByIdSuccess({ this.parkingSpace });
-}
-
-final class GetAllParkingSpacesSuccess extends ParkingSpacesState {
+final class ParkingSpacesSuccess extends ParkingSpacesState {
   final List<ParkingSpace>? parkingSpacesList;
-  GetAllParkingSpacesSuccess({ this.parkingSpacesList });
-}
-
-final class CreateParkingSpaceSuccess extends ParkingSpacesState {
-  final ParkingSpace? parkingSpace;
-  CreateParkingSpaceSuccess({ this.parkingSpace });
-}
-
-final class UpdateParkingSpaceSuccess extends ParkingSpacesState {
-  final ParkingSpace? parkingSpace;
-  UpdateParkingSpaceSuccess({ this.parkingSpace });
-}
-
-final class DeleteParkingSpaceSuccess extends ParkingSpacesState {
-  final ParkingSpace? parkingSpace;
-  DeleteParkingSpaceSuccess({ this.parkingSpace });
+  ParkingSpacesSuccess({ this.parkingSpacesList });
 }
 
 final class ParkingSpacesError extends ParkingSpacesState {
@@ -74,9 +53,9 @@ final class ParkingSpacesBloc extends Bloc<ParkingSpacesEvent, ParkingSpacesStat
       switch(event) {
         case GetParkingSpaceById():
           try {
-            var parkingSpace = await ParkingSpaceRepository().getById(event.id);
+            var parkingSpace = await ParkingSpaceRepository().readById(event.id);
             if(parkingSpace != null) {
-              emit(GetParkingSpaceByIdSuccess(parkingSpace: parkingSpace));
+              emit(ParkingSpacesSuccess(parkingSpacesList: [parkingSpace]));
             } else {
               emit(ParkingSpacesError());
             }
@@ -86,11 +65,9 @@ final class ParkingSpacesBloc extends Bloc<ParkingSpacesEvent, ParkingSpacesStat
 
         case GetAllParkingSpaces():
           try {
-            debugPrint("Trying to get all parkingspaces from repo...");
-            var parkingSpacesList = await ParkingSpaceRepository().getAll();
+            var parkingSpacesList = await ParkingSpaceRepository().read();
             if(parkingSpacesList != null) {
-              debugPrint("Got a new parkingspace list from repo");
-              emit(GetAllParkingSpacesSuccess(parkingSpacesList: parkingSpacesList));
+              emit(ParkingSpacesSuccess(parkingSpacesList: parkingSpacesList));
             } else {
               emit(ParkingSpacesError());
             }
@@ -100,9 +77,10 @@ final class ParkingSpacesBloc extends Bloc<ParkingSpacesEvent, ParkingSpacesStat
 
         case CreateParkingSpace():
           try {
-            var newParkingSpace = await ParkingSpaceRepository().add(event.parkingSpace);
+            var newParkingSpace = await ParkingSpaceRepository().create(event.parkingSpace);
             if(newParkingSpace != null) {
-              emit(CreateParkingSpaceSuccess(parkingSpace: newParkingSpace));
+              var parkingSpacesList = await ParkingSpaceRepository().read();
+              emit(ParkingSpacesSuccess(parkingSpacesList: parkingSpacesList));
             } else {
               emit(ParkingSpacesError());
             }
@@ -114,7 +92,8 @@ final class ParkingSpacesBloc extends Bloc<ParkingSpacesEvent, ParkingSpacesStat
           try {
             var updatedParkingSpace = await ParkingSpaceRepository().update(event.parkingSpace.id, event.parkingSpace);
             if(updatedParkingSpace != null) {
-              emit(UpdateParkingSpaceSuccess(parkingSpace: updatedParkingSpace));
+              var parkingSpacesList = await ParkingSpaceRepository().read();
+              emit(ParkingSpacesSuccess(parkingSpacesList: parkingSpacesList));
             } else {
               emit(ParkingSpacesError());
             }
@@ -124,9 +103,10 @@ final class ParkingSpacesBloc extends Bloc<ParkingSpacesEvent, ParkingSpacesStat
           
         case DeleteParkingSpace():
           try {
-            var deletedParkingSpace = await ParkingSpaceRepository().update(event.parkingSpace.id, event.parkingSpace);
+            var deletedParkingSpace = await ParkingSpaceRepository().delete(event.parkingSpace.id);
             if(deletedParkingSpace != null) {
-              emit(DeleteParkingSpaceSuccess(parkingSpace: deletedParkingSpace));
+              var parkingSpacesList = await ParkingSpaceRepository().read();
+              emit(ParkingSpacesSuccess(parkingSpacesList: parkingSpacesList));
             } else {
               emit(ParkingSpacesError());
             }

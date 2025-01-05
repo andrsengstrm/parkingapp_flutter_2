@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parkingapp_user/blocs/auth_bloc.dart';
 import 'package:parkingapp_user/blocs/persons_bloc.dart';
+import 'package:parkingapp_user/repositories/person_repository.dart';
 import 'package:shared/models/person.dart';
 
 class Login extends StatefulWidget {
@@ -17,6 +18,7 @@ class _LoginState extends State<Login> {
 
   LoginMode loginMode = LoginMode.login;
   String? message;
+  late PersonRepository repository;
 
   @override
   void initState() {
@@ -31,7 +33,7 @@ class _LoginState extends State<Login> {
       child: Scaffold(
         body: Container(
           padding: const EdgeInsets.all(32),
-          color: Colors.white,
+          //color: Colors.white,
           child: Center(
             child: Wrap(
               children: [
@@ -81,7 +83,6 @@ class _CreateUserForm extends StatelessWidget {
     String? email;
     String? name;
     String? personId;
-    String? pwd;
     return Form(
       key: loginFormKey,
       child: Wrap(
@@ -145,9 +146,9 @@ class _CreateUserForm extends StatelessWidget {
               if(loginFormKey.currentState!.validate()) {
                 loginFormKey.currentState!.save();
                 if(email != null && personId != null && name != null) {
-                  var userToAdd = Person(email: email, personId: personId!, name: name!);
+                  var userToAdd = Person(email: email!, personId: personId!, name: name!);
                   context.read<PersonsBloc>().add(CreatePerson(person: userToAdd));
-                  context.read<AuthBloc>().add(AuthLogin(userToAdd.email!));
+                  context.read<AuthBloc>().add(AuthLogin(email: userToAdd.email));
                 }
               } 
             },
@@ -229,7 +230,7 @@ class _LoginUserForm extends StatelessWidget {
             onPressed: () async {
               if(loginFormKey.currentState!.validate()) {
                 loginFormKey.currentState!.save();
-                context.read<AuthBloc>().add(AuthLogin(email!));
+                context.read<AuthBloc>().add(AuthLogin(email: email!));
               } 
             },
             child: const Text("Logga in")

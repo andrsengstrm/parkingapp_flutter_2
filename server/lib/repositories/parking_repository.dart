@@ -8,23 +8,23 @@ class ParkingRepository implements RepositoryInterface<Parking> {
   Box itemBox = ServerConfig().store.box<Parking>();
 
   @override
-  Future<Parking?> add(Parking item) async {
+  Future<Parking?> create(Parking item) async {
     itemBox.put(item, mode: PutMode.insert);
     return item;
   }
 
   @override
-  Future<Parking?> getById(int id) async {
+  Future<Parking?> readById(int id) async {
     return itemBox.get(id);
   } 
 
-  Future<List<Parking>?> getByVehicleOwnerEmail(String email) async {
+  Future<List<Parking>?> readByVehicleOwnerEmail(String email) async {
     var itemList = itemBox.getAll().where((p) => p.vehicle.owner.email == email).cast<Parking>().toList();
     return itemList;
   } 
 
   @override
-  Future<List<Parking>?> getAll() async {
+  Future<List<Parking>?> read() async {
     var itemList = itemBox.getAll().cast<Parking>();
     return itemList;
   }

@@ -30,9 +30,7 @@ class Parking {
     parkingSpace = ParkingSpace.fromJson(jsonDecode(json));  
   }
 
-  //@Property(type: PropertyType.dateNano)
   String startTime;
-  //@Property(type: PropertyType.dateNano)
   String? endTime;
 
   Parking({int? id, this.vehicle, this.parkingSpace, required this.startTime, this.endTime}) 
@@ -74,7 +72,7 @@ class Parking {
     } else {
       end = DateTime.now().millisecondsSinceEpoch;
     }
-    //int end = DateTime.tryParse(selectedParking.endTime) != null ? DateTime.parse(endTime!).millisecondsSinceEpoch : ;
+    
     int total = end - start;
 
     //convert to hours and calculate the cost
@@ -86,23 +84,4 @@ class Parking {
 
   }
 
-  //calculate the price for the parking
-  /*
-  String getCostForParking() {
-
-    double cost = 0;
-
-    //caclulate differnce in milliseconds from epoch. If parking is not finished we use now() to get the current cost
-    int start = DateTime.parse(startTime).millisecondsSinceEpoch;
-    int end =  DateTime.tryParse(endTime!) != null ? DateTime.parse(endTime!).millisecondsSinceEpoch : DateTime.now().millisecondsSinceEpoch;
-    int total = end - start;
-
-    //convert to hours and calculate the cost
-    double totalHours = total / 3600000;
-    cost =  totalHours * 19; //parkingSpace.pricePerHour;
-
-    return cost.toStringAsFixed(2);
-
-  }
-  */
 }

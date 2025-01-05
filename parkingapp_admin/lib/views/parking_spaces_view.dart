@@ -17,7 +17,7 @@ class _ParkingSpacesViewState extends State<ParkingSpacesView> {
   Future<List<ParkingSpace>?> getParkingSpaceList() async {
     List<ParkingSpace>? items;
     try{
-      items = await ParkingSpaceRepository().getAll();
+      items = await ParkingSpaceRepository().read();
       setState(() {
         dataLoaded = true;
       });
@@ -155,7 +155,7 @@ class _ParkingSpacesViewState extends State<ParkingSpacesView> {
                         onPressed: () async {
                           var item = await showItemForm(context, null);
                           if(item?.id == -1) {
-                            await ParkingSpaceRepository().add(item!);  
+                            await ParkingSpaceRepository().create(item!);  
                             setState(() {
                               itemList = getParkingSpaceList();
                             }); 

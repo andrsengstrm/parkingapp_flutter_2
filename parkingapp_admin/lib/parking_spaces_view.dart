@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parkingapp_admin/blocs/parkingspaces_bloc.dart';
@@ -13,29 +11,11 @@ class ParkingSpacesView extends StatelessWidget {
 
     context.read<ParkingSpacesBloc>().add(GetAllParkingSpaces());
 
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        Container(
-          alignment: Alignment.topLeft,
-          padding: const EdgeInsets.all(16),
-          color: Colors.white,
-          child: _ParkingSpacesList(),
-        ),
-        Positioned(
-            bottom: 16,
-            left: 16,
-            child: 
-              Row (
-                children: [
-                  Padding(
-                      padding: const EdgeInsets.only(right:8.0),
-                      child: _ParkingSpacesCreate()
-                    )
-                ]
-              ) 
-          )
-      ]
+    return Container(
+      alignment: Alignment.topLeft,
+      padding: const EdgeInsets.all(16),
+      color: Colors.white,
+      child: _ParkingSpacesList(),
     );
   }
 }
@@ -47,87 +27,159 @@ class _ParkingSpacesList extends StatelessWidget {
   Widget build(BuildContext context) {
     final ParkingSpacesState parkingSpacesState = context.watch<ParkingSpacesBloc>().state;
     switch(parkingSpacesState) {
-      case GetAllParkingSpacesSuccess(parkingSpacesList: List<ParkingSpace> list):
+      case ParkingSpacesSuccess(parkingSpacesList: List<ParkingSpace> list):
         return parkingSpacesList(context, list);
-      case CreateParkingSpaceSuccess():
-        context.read<ParkingSpacesBloc>().add(GetAllParkingSpaces());
-        return const SizedBox.shrink();
-      case UpdateParkingSpaceSuccess():
-        context.read<ParkingSpacesBloc>().add(GetAllParkingSpaces());
-        return const SizedBox.shrink();
       default:
         return const SizedBox.shrink();
     }
   }
 
   Widget parkingSpacesList(BuildContext context, items) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text("Parkeringsplatser", style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 16),
-        const Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: 200, 
-              child: Text("Parkeringsplats", style: TextStyle(fontWeight: FontWeight.bold)),
-            ),
-            SizedBox(
-              width: 200, 
-              child: Text("Kostnad/timme", style: TextStyle(fontWeight: FontWeight.bold)),
-            )
-          ]
-        ),
-        const SizedBox(height: 8),
-        ListView.separated(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          itemCount: items.length,
-          itemBuilder: (BuildContext context, int index) {
-            return GestureDetector(
-              onTap: () async {
-                var item = await showItemForm(context, items[index]);
-                if(item != null && context.mounted) {
-                  context.read<ParkingSpacesBloc>().add(UpdateParkingSpace(parkingSpace: item));
-                }
-              },
-              child: MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  color: Colors.white, //selectedItem == items[index] ? Colors.blueGrey[50] : Colors.white,
-                  child: Row (
+    return Container(
+      width: 1080,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text("Parkeringsplatser", style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold)),
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween
+            ,
+            children: [
+              const Text("Här visas alla parkeringsplatser som finns i systemet."),
+              _ParkingSpacesActionCreate()
+            ],
+          ),
+          const SizedBox(height: 16),
+          Container(
+            decoration: BoxDecoration(border: Border.all(color: Colors.black12)),
+            width: 1080,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  color: Colors.grey[50],
+                  child: const Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        width: 200,
-                        child: Text(items[index].address),
+                        width: 660, 
+                        child: Text("Parkeringsplats", style: TextStyle(fontWeight: FontWeight.bold)),
                       ),
                       SizedBox(
-                        width: 200,
-                        child: Text(items[index].pricePerHour.toString()),
+                        width: 240, 
+                        child: Text("Kostnad/timme", style: TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.end),
+                      ),
+                      SizedBox(
+                        width: 140, 
+                        child: Text("", style: TextStyle(fontWeight: FontWeight.bold)),
                       )
-                    ],
+                    ]
                   ),
                 ),
-              )
-            );
-          },
-          separatorBuilder: (BuildContext context, int index) => const SizedBox.shrink(),
-        )
-      ]
+                const Divider(height: 1, color: Colors.black12),
+                ListView.separated(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemCount: items.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Container(
+                      padding: const EdgeInsets.all(8),
+                      color: Colors.white, //selectedItem == items[index] ? Colors.blueGrey[50] : Colors.white,
+                      child: Row (
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 660,
+                            child: Text(items[index].address),
+                          ),
+                          SizedBox(
+                            width: 240,
+                            child: Text(items[index].pricePerHour.toString(), textAlign: TextAlign.end),
+                          ),
+                          SizedBox(
+                            width: 140,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                GestureDetector(
+                                  onTap: () async {
+                                    var item = await showItemEditDialog(context, items[index]);
+                                    if(item != null && context.mounted) {
+                                      context.read<ParkingSpacesBloc>().add(UpdateParkingSpace(parkingSpace: item));
+                                    }
+                                  },
+                                  child: const MouseRegion(
+                                    cursor: SystemMouseCursors.click,
+                                    child: Padding(
+                                      padding: EdgeInsets.only(top:2, right:8, bottom:2, left: 8),
+                                      child: Icon(Icons.edit, size: 18),
+                                    )
+                                  )
+                                ),
+                                GestureDetector(
+                                  onTap: () async {
+                                    var item = await showItemDeleteDialog(context, items[index]);
+                                    if(item != null && context.mounted) {
+                                      context.read<ParkingSpacesBloc>().add(DeleteParkingSpace(parkingSpace: item));
+                                    }
+                                  },
+                                  child: const MouseRegion(
+                                    cursor: SystemMouseCursors.click,
+                                    child: Padding(
+                                      padding: EdgeInsets.only(top:2, right:8, bottom:2, left: 8),
+                                      child: Icon(Icons.delete, size: 18),
+                                    )
+                                  )
+                                ),
+                                /*
+                                IconButton(
+                                  iconSize: 15,
+                                  onPressed: () async {
+                                    var item = await showItemEditDialog(context, items[index]);
+                                    if(item != null && context.mounted) {
+                                      context.read<ParkingSpacesBloc>().add(UpdateParkingSpace(parkingSpace: item));
+                                    }
+                                  }, 
+                                  icon: const Icon(Icons.edit)
+                                ),
+                                IconButton(
+                                  iconSize: 15,
+                                  onPressed: () async {
+                                     var item = await showItemDeleteDialog(context, items[index]);
+                                    if(item != null && context.mounted) {
+                                      context.read<ParkingSpacesBloc>().add(DeleteParkingSpace(parkingSpace: item));
+                                    }
+                                  }, 
+                                  icon: const Icon(Icons.delete)
+                                )
+                                */
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    );
+                  },
+                  separatorBuilder: (BuildContext context, int index) => const Divider(height: 1, color: Colors.black12),
+                ),
+              ]
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
-class _ParkingSpacesCreate extends StatelessWidget {
+class _ParkingSpacesActionCreate extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton (
+    return FilledButton (
       onPressed: () async {
-        var item = await showItemForm(context, null);
+        var item = await showItemEditDialog(context, null);
         if(item != null && context.mounted) {
           context.read<ParkingSpacesBloc>().add(CreateParkingSpace(parkingSpace: item));
         }
@@ -137,7 +189,7 @@ class _ParkingSpacesCreate extends StatelessWidget {
   }
 }
 
-Future<ParkingSpace?> showItemForm (BuildContext context, ParkingSpace? item) {
+Future<ParkingSpace?> showItemEditDialog (BuildContext context, ParkingSpace? item) {
   
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -227,13 +279,13 @@ Future<ParkingSpace?> showItemForm (BuildContext context, ParkingSpace? item) {
 
 }
 
-Future<String?> showRemovalDialog(BuildContext context, ParkingSpace item) {
+Future<ParkingSpace?> showItemDeleteDialog(BuildContext context, ParkingSpace item) {
 
   // set up the button
   Widget okButton = TextButton(
     child: const Text("OK"),
     onPressed: () { 
-      Navigator.of(context).pop("confirm"); // dismiss dialog
+      Navigator.of(context).pop(item); // dismiss dialog
     },
   );
 
@@ -246,18 +298,16 @@ Future<String?> showRemovalDialog(BuildContext context, ParkingSpace item) {
   );
 
     // set up the AlertDialog
-  return showDialog<String>(
+  return showDialog(
     context: context, 
-    builder: (BuildContext builder) {
-      return AlertDialog (
-        title:  const Text("Vill du ta bort parkeringsplatsen?"),
-        content: const Text(""),
-        actions: [
-          cancelButton,
-          okButton,
-        ],
-      );
-    }
+    builder: (BuildContext builder) => AlertDialog (
+      title:  const Text("Vill du ta bort parkeringsplatsen?"),
+      content: const Text(""),
+      actions: [
+        cancelButton,
+        okButton,
+      ],
+    )
   );
   
 

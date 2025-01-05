@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 //import 'package:shared/helpers/helpers.dart';
 import 'package:shared/models/person.dart';
@@ -12,7 +13,9 @@ class PersonRepository implements RepositoryInterface<Person> {
   final path = "/person";
 
   @override
-  Future<Person?> add(Person item) async {
+  Future<Person?> create(Person item) async {
+
+    debugPrint("Trying to add a person");
 
     final body = item.toJson();
     dynamic response;
@@ -47,7 +50,7 @@ class PersonRepository implements RepositoryInterface<Person> {
 
 
   @override
-  Future<List<Person>> getAll() async {
+  Future<List<Person>> read() async {
     
     dynamic response;
 
@@ -85,7 +88,7 @@ class PersonRepository implements RepositoryInterface<Person> {
 
 
   @override
-  Future<Person> getById(int id) async {
+  Future<Person?> readById(int id) async {
 
     dynamic response;
 
@@ -116,7 +119,7 @@ class PersonRepository implements RepositoryInterface<Person> {
   }
 
 
-  Future<Person?> getByEmail(String email) async {
+  Future<Person?> readByEmail(String email) async {
 
     dynamic response;
 

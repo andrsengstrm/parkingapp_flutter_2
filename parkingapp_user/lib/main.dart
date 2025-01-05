@@ -7,6 +7,7 @@ import 'package:parkingapp_user/blocs/persons_bloc.dart';
 import 'package:parkingapp_user/blocs/vehicles_bloc.dart';
 import 'package:parkingapp_user/account_view.dart';
 import 'package:parkingapp_user/parkings.dart';
+import 'package:parkingapp_user/repositories/person_repository.dart';
 import 'package:parkingapp_user/vehicles.dart';
 import 'package:parkingapp_user/login.dart';
 
@@ -28,24 +29,22 @@ class ParkingApp extends StatelessWidget {
     return MaterialApp(
       title: 'Parkeringsappen',
       theme: ThemeData(
-        // This is the theme of your application.
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.amber,
+          brightness: Brightness.light,
+        ),
         //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
         useMaterial3: true,
       ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor:Colors.amber,
+          brightness: Brightness.dark
+        ),
+        //brightness: Brightness.dark,
+        useMaterial3: true,
+      ),
+      themeMode: ThemeMode.dark,
       home: const MainView()
     );
   }
@@ -66,7 +65,7 @@ class MainView extends StatelessWidget {
        return const Scaffold(body: Center(child: CircularProgressIndicator(strokeWidth: 1)));
       case AuthSuccess():
         return const MainNav();
-      case AuthFailure(error: String errMsg):
+      case AuthError(error: String? errMsg):
        return Login(message: errMsg);
     }
   }
@@ -97,14 +96,15 @@ class _MainNavState extends State<MainNav> {
   ];
 
   int _selectedIndex = 0;
-
+  late PersonRepository repository;
+  
   @override
   Widget build(BuildContext context) {
-
+    
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => ParkingsBloc()),
-        BlocProvider(create: (context) => PersonsBloc()),
+        BlocProvider(create: (context) => PersonsBloc(repository: repository)),
         BlocProvider(create: (context) => VehiclesBloc()),
         BlocProvider(create: (context) => ParkingSpacesBloc())
       ],

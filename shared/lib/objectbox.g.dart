@@ -294,8 +294,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         objectToFB: (Person object, fb.Builder fbb) {
           final personIdOffset = fbb.writeString(object.personId);
           final nameOffset = fbb.writeString(object.name);
-          final emailOffset =
-              object.email == null ? null : fbb.writeString(object.email!);
+          final emailOffset = fbb.writeString(object.email);
           fbb.startTable(5);
           fbb.addInt64(0, object.id);
           fbb.addOffset(1, personIdOffset);
@@ -314,7 +313,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
           final nameParam = const fb.StringReader(asciiOptimization: true)
               .vTableGet(buffer, rootOffset, 8, '');
           final emailParam = const fb.StringReader(asciiOptimization: true)
-              .vTableGetNullable(buffer, rootOffset, 10);
+              .vTableGet(buffer, rootOffset, 10, '');
           final object = Person(
               id: idParam,
               personId: personIdParam,

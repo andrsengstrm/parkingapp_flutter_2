@@ -12,7 +12,7 @@ Future<Response> addParkingSpace(Request request) async {
 
     final requestBody = await request.readAsString();
     final parkingSpace = ParkingSpace.fromJson(jsonDecode(requestBody));
-    final addedParkingSpace = await ParkingSpaceRepository().add(parkingSpace);
+    final addedParkingSpace = await ParkingSpaceRepository().create(parkingSpace);
 
     return Response.ok(jsonEncode(addedParkingSpace));
 
@@ -31,7 +31,7 @@ Future<Response> getAllParkingSpaces(Request request) async {
 
     print("Trying to get all parking space...");
 
-    final parkingSpaceList = await ParkingSpaceRepository().getAll();
+    final parkingSpaceList = await ParkingSpaceRepository().read();
 
     return Response.ok(jsonEncode(parkingSpaceList));
 
@@ -52,7 +52,7 @@ Future<Response> getParkingSpaceById(Request request) async {
 
     final id = request.params['id']!;
     
-    final person = await ParkingSpaceRepository().getById(int.parse(id));
+    final person = await ParkingSpaceRepository().readById(int.parse(id));
 
     return Response.ok(jsonEncode(person));
   

@@ -11,7 +11,7 @@ class VehicleRepository implements RepositoryInterface<Vehicle> {
 
 
   @override
-  Future<Vehicle?> add(Vehicle item) async {
+  Future<Vehicle?> create(Vehicle item) async {
 
     final body = item.toJson();
     dynamic response;
@@ -46,7 +46,7 @@ class VehicleRepository implements RepositoryInterface<Vehicle> {
 
 
   @override
-  Future<List<Vehicle>?> getAll() async {
+  Future<List<Vehicle>?> read() async {
 
     dynamic response;
 
@@ -84,7 +84,7 @@ class VehicleRepository implements RepositoryInterface<Vehicle> {
   }
 
 
-  Future<List<Vehicle>?> getByOwnerEmail(email) async {
+  Future<List<Vehicle>?> readByOwnerEmail(email) async {
 
     dynamic response;
 
@@ -123,7 +123,7 @@ class VehicleRepository implements RepositoryInterface<Vehicle> {
 
 
   @override
-  Future<Vehicle?> getById(int id) async {
+  Future<Vehicle?> readById(int id) async {
     
     dynamic response;
 

@@ -22,7 +22,7 @@ class VehiclesView extends StatelessWidget {
 
   Widget vehiclesMainView(BuildContext context, Person user) {
 
-    context.read<VehiclesBloc>().add(GetVehiclesByUser(user:user));
+    context.read<VehiclesBloc>().add(ReadVehiclesByOwnerEmail(user:user));
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -47,7 +47,7 @@ class _VehiclesList extends StatelessWidget {
 
     var state = context.watch<VehiclesBloc>().state;
     switch(state) {
-      case GetVehiclesByUserSuccess(vehiclesList: var list): 
+      case VehiclesSuccess(vehiclesList: var list): 
         return vehiclesList(context, list);
       default: 
         return const SizedBox.shrink();
@@ -77,7 +77,7 @@ class _VehiclesList extends StatelessWidget {
                         if(updatedVehicle != null) {
                           if(context.mounted) {
                             context.read<VehiclesBloc>().add(UpdateVehicle(vehicle: updatedVehicle));
-                            context.read<VehiclesBloc>().add(GetVehiclesByUser(user:user));
+                            context.read<VehiclesBloc>().add(ReadVehiclesByOwnerEmail(user:user));
                           }
                         }
                       },
@@ -90,7 +90,7 @@ class _VehiclesList extends StatelessWidget {
                               if(updatedVehicle != null) {
                                 if(context.mounted) {
                                   context.read<VehiclesBloc>().add(UpdateVehicle(vehicle: updatedVehicle));
-                                  context.read<VehiclesBloc>().add(GetVehiclesByUser(user:user));
+                                  context.read<VehiclesBloc>().add(ReadVehiclesByOwnerEmail(user:user));
                                 }
                               }
                             },
@@ -102,7 +102,7 @@ class _VehiclesList extends StatelessWidget {
                               if(deleteVehicle != null) {
                                 if(context.mounted) {
                                   context.read<VehiclesBloc>().add(DeleteVehicle(vehicle: deleteVehicle));
-                                  context.read<VehiclesBloc>().add(GetVehiclesByUser(user:user));
+                                  context.read<VehiclesBloc>().add(ReadVehiclesByOwnerEmail(user:user));
                                 }
                               }
                             },
@@ -122,8 +122,8 @@ class _VehiclesList extends StatelessWidget {
                 var newVehicle = await showVehicleDetailsDialog(context, null, user);
                 if(newVehicle != null) {
                   if(context.mounted) {
-                    context.read<VehiclesBloc>().add(AddVehicle(vehicle: newVehicle));
-                    context.read<VehiclesBloc>().add(GetVehiclesByUser(user:user));
+                    context.read<VehiclesBloc>().add(CreateVehicle(vehicle: newVehicle));
+                    context.read<VehiclesBloc>().add(ReadVehiclesByOwnerEmail(user:user));
                   }
                 }
               } ,

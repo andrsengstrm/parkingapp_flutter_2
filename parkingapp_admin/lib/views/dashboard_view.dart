@@ -24,7 +24,7 @@ class _DashboardViewState extends State<DashboardView> {
   late double totalParkingsCost = 0;
 
   Future<List<Parking>> getAllParkingsList() async {
-    var parkingsList = await ParkingRepository().getAll();
+    var parkingsList = await ParkingRepository().read();
     var allParkingsList = parkingsList!.toList();
     var activeParkingsList = parkingsList.where((p) => p.endTime == null).toList();
     setState(() {
@@ -37,7 +37,7 @@ class _DashboardViewState extends State<DashboardView> {
   Future<List<ParkingSpace>?> getParkingSpacesList() async {
     List<ParkingSpace>? items;
     try{
-      items = await ParkingSpaceRepository().getAll();
+      items = await ParkingSpaceRepository().read();
       setState(() {
         allParkingSpacesCount = items!.length;
       });
@@ -50,7 +50,7 @@ class _DashboardViewState extends State<DashboardView> {
   }
 
   Future<List<ParkingSpace>?> getAllParkingSpacesList() async {
-    var activeParkings = await ParkingRepository().getAll();
+    var activeParkings = await ParkingRepository().read();
     var busyParkings = [];
     double cost = 0;
     for(var i = 0; i < activeParkings!.length; i++) {
@@ -62,7 +62,7 @@ class _DashboardViewState extends State<DashboardView> {
       }
       cost += double.tryParse(parking.getCostForParking()) != null ? double.parse(parking.getCostForParking()): 0;
     }
-    var allParkingSpaces = await ParkingSpaceRepository().getAll();
+    var allParkingSpaces = await ParkingSpaceRepository().read();
     late List<ParkingSpace>? availableParkingSpaces = [];
     for(var i = 0; i < allParkingSpaces!.length; i++) {
       var parkingSpace = allParkingSpaces[i];

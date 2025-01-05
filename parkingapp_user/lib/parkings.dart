@@ -28,9 +28,9 @@ class ParkingsView extends StatelessWidget {
 
   Widget parkingsMainView(BuildContext context, Person user) {
 
-    context.read<ParkingsBloc>().add(GetParkingsByUser(user:user));
-    context.read<VehiclesBloc>().add(GetVehiclesByUser(user:user));
-    context.read<ParkingSpacesBloc>().add(GetAllParkingSpaces());
+    context.read<ParkingsBloc>().add(ReadParkingsByUser(user:user));
+    context.read<VehiclesBloc>().add(ReadVehiclesByOwnerEmail(user:user));
+    context.read<ParkingSpacesBloc>().add(ReadAllParkingSpaces());
 
     return Container(
       //color: Colors.blue,
@@ -62,7 +62,7 @@ class _ParkingsStartParking extends StatelessWidget {
 
     final VehiclesState vehiclesState = context.watch<VehiclesBloc>().state;
     switch(vehiclesState) {
-      case GetVehiclesByUserSuccess(vehiclesList: List<Vehicle> list):
+      case VehiclesSuccess(vehiclesList: List<Vehicle> list):
         ownerVehiclesList = list;
       default:
         //
@@ -70,7 +70,7 @@ class _ParkingsStartParking extends StatelessWidget {
 
     final ParkingSpacesState parkingSpacesState = context.watch<ParkingSpacesBloc>().state;
     switch(parkingSpacesState) {
-      case GetAllParkingSpacesSuccess(parkingSpacesList: List<ParkingSpace> list):
+      case ParkingSpacesSuccess(parkingSpacesList: List<ParkingSpace> list):
         parkingSpacesList = list;
       default:
         //
@@ -86,8 +86,7 @@ class _ParkingsStartParking extends StatelessWidget {
           var newParking = await showStartParkingDialog(context, ownerVehiclesList, parkingSpacesList);
           if(newParking != null) {
             if(context.mounted) {
-              context.read<ParkingsBloc>().add(StartParking(newParking));
-              context.read<ParkingsBloc>().add(GetParkingsByUser(user:user));
+              context.read<ParkingsBloc>().add(CreateParking(parking: newParking));
             }
           }
         },
@@ -109,7 +108,7 @@ class _ParkingsList extends StatelessWidget {
 
     var state = context.watch<ParkingsBloc>().state;
     switch(state) {
-      case GetParkingsByUserSuccess(parkingsList: var list): 
+      case ParkingsSuccess(parkingsList: var list): 
         return parkingsList(context, list);
       default: 
         return const SizedBox.shrink();
@@ -139,13 +138,9 @@ class _ParkingsList extends StatelessWidget {
                       title: Text("${activeParkings[index].vehicle!.regId} - ${activeParkings[index].parkingSpace!.address}"),
                       onTap: () async {
                           var updatedParking = await showEditParkingDialog(context, activeParkings[index]);
-                          debugPrint("Trying to update parking...");
-                          //debugPrint(updatedParking!.endTime);
                           if(updatedParking != null) {
-                            debugPrint("Updating parking...");
                             if(context.mounted) {
-                              context.read<ParkingsBloc>().add(UpdateParking(updatedParking));
-                              context.read<ParkingsBloc>().add(GetParkingsByUser(user:user));
+                              context.read<ParkingsBloc>().add(UpdateParking(parking: updatedParking));
                             }
                           }
                       } ,
@@ -169,8 +164,8 @@ class _ParkingsList extends StatelessWidget {
                           var updatedParking = await showEditParkingDialog(context, finishedParkings[index]);
                           if(updatedParking != null) {
                             if(context.mounted) {
-                              context.read<ParkingsBloc>().add(UpdateParking(updatedParking));
-                              context.read<ParkingsBloc>().add(GetParkingsByUser(user:user));
+                              context.read<ParkingsBloc>().add(UpdateParking(parking: updatedParking));
+                              context.read<ParkingsBloc>().add(ReadParkingsByUser(user:user));
                             }
                           }
                       } ,
@@ -220,7 +215,6 @@ Future<Parking?>? showStartParkingDialog(BuildContext context, List<Vehicle>? ow
   */
   //List<ParkingSpace> selectableParkingSpaceList = getAvailableParkingSpaces();
 
-  //return showDialog(
   return showModalBottomSheet(
     context: context,
     builder: (BuildContext context) => Dialog.fullscreen(

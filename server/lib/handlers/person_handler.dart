@@ -12,7 +12,7 @@ Future<Response> addPerson(Request request) async {
 
     final requestBody = await request.readAsString();
     final person = Person.fromJson(jsonDecode(requestBody));
-    final addedPerson = await PersonRepository().add(person);
+    final addedPerson = await PersonRepository().create(person);
 
     return Response.ok(jsonEncode(addedPerson));
 
@@ -32,7 +32,7 @@ Future<Response> getAllPersons(Request request) async {
 
     print("Trying to get all persons...");
     
-    final personList = await PersonRepository().getAll();
+    final personList = await PersonRepository().read();
     
     return Response.ok(jsonEncode(personList));
 
@@ -51,7 +51,7 @@ Future<Response> getPersonById(Request request) async {
     print("Trying to get person...");
     
     final id = request.params['id']!;
-    final person = await PersonRepository().getById(int.parse(id));
+    final person = await PersonRepository().readById(int.parse(id));
     
     return Response.ok(jsonEncode(person));
 
@@ -71,7 +71,7 @@ Future<Response> getPersonByEmail(Request request) async {
     print("Trying to get a person...");
     
     final email = request.params['email']!;
-    final person = await PersonRepository().getByEmail(email);
+    final person = await PersonRepository().readByEmail(email);
     
     if(person != null) {
       return Response.ok(jsonEncode(person));

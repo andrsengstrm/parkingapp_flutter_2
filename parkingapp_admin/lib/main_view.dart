@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:parkingapp_admin/blocs/parkings_bloc.dart';
 import 'package:parkingapp_admin/blocs/parkingspaces_bloc.dart';
 import 'package:parkingapp_admin/dashboard_view.dart';
 import 'package:parkingapp_admin/parking_spaces_view.dart';
@@ -32,6 +33,7 @@ class _MainViewState extends State<MainView> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider(create: (context) => ParkingsBloc()),
         BlocProvider(create: (context) => ParkingSpacesBloc())
       ],
       child: Scaffold(

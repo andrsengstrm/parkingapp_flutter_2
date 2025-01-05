@@ -12,7 +12,7 @@ Future<Response> addParking(Request request) async {
 
     final requestBody = await request.readAsString();
     final parking = Parking.fromJson(jsonDecode(requestBody));
-    final addedParking = await ParkingRepository().add(parking);
+    final addedParking = await ParkingRepository().create(parking);
 
     return Response.ok(jsonEncode(addedParking));
 
@@ -31,7 +31,7 @@ Future<Response> getAllParkings(Request request) async {
 
     print("Trying to get all parkings...");
     
-    final parkingList = await ParkingRepository().getAll();
+    final parkingList = await ParkingRepository().read();
     
     return Response.ok(jsonEncode(parkingList));
 
@@ -51,7 +51,7 @@ Future<Response> getParkingById(Request request) async {
     print("Trying to get parking...");
     
     final id = request.params['id']!;
-    final parking = await ParkingRepository().getById(int.parse(id));
+    final parking = await ParkingRepository().readById(int.parse(id));
     
     return Response.ok(jsonEncode(parking));
 
@@ -72,7 +72,7 @@ Future<Response> getParkingByVehicleOwnerId(Request request) async {
     
     final email = request.params['email']!;
     print("Email: $email");
-    final parking = await ParkingRepository().getByVehicleOwnerEmail(email);
+    final parking = await ParkingRepository().readByVehicleOwnerEmail(email);
     
     return Response.ok(jsonEncode(parking));
 

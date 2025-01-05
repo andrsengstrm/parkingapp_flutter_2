@@ -17,13 +17,13 @@ class _ParkingsViewState extends State<ParkingsView> {
   late Future<List<Parking>?> finishedParkingsList;
 
   Future<List<Parking>> getActiveParkingsList() async {
-    var parkingsList = await ParkingRepository().getAll();
+    var parkingsList = await ParkingRepository().read();
     parkingsList = parkingsList!.where((p) => p.endTime == null).toList();
     return parkingsList;
   }
 
   Future<List<Parking>> getFinishedParkingsList() async {
-    var parkingsList = await ParkingRepository().getAll();
+    var parkingsList = await ParkingRepository().read();
     parkingsList = parkingsList!.where((p) => p.endTime != null).toList();
     return parkingsList;
   }

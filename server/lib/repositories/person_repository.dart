@@ -8,23 +8,23 @@ class PersonRepository implements RepositoryInterface<Person> {
   Box itemBox = ServerConfig().store.box<Person>();
 
   @override
-  Future<Person?> add(Person item) async {
+  Future<Person?> create(Person item) async {
     itemBox.put(item, mode: PutMode.insert);
     return item;
   }
 
   @override
-  Future<Person?> getById(int id) async {
+  Future<Person?> readById(int id) async {
     return itemBox.get(id);
   }
 
-  Future<Person?> getByEmail(String email) async {
+  Future<Person?> readByEmail(String email) async {
     return itemBox.getAll().where((p) => p.email == email).firstOrNull;
   }
 
 
   @override
-  Future<List<Person>?> getAll() async {
+  Future<List<Person>?> read() async {
     var itemList = itemBox.getAll().cast<Person>();
     return itemList;
   }

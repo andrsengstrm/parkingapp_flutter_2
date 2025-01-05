@@ -39,31 +39,10 @@ final class ParkingsLoading extends ParkingsState {
   ParkingsLoading();
 }
 
-final class GetParkingByIdSuccess extends ParkingsState {
-  Parking? parking;
-  GetParkingByIdSuccess({this.parking});
-}
-
-final class GetParkingsByUserSuccess extends ParkingsState {
+final class ParkingsSuccess extends ParkingsState {
   List<Parking>? parkingsList;
-  GetParkingsByUserSuccess({this.parkingsList});
+  ParkingsSuccess({this.parkingsList});
 }
-
-final class GetAllParkingsSuccess extends ParkingsState {
-  List<Parking>? parkingsList;
-  GetAllParkingsSuccess({this.parkingsList});
-}
-
-final class StartParkingSuccess extends ParkingsState {
-  Parking? parking;
-  StartParkingSuccess({this.parking});
-}
-
-final class UpdateParkingSuccess extends ParkingsState {
-  Parking? parking;
-  UpdateParkingSuccess({this.parking});
-}
-
 
 final class ParkingsError extends ParkingsState {
   ParkingsError();
@@ -75,9 +54,9 @@ class ParkingsBloc extends Bloc<ParkingsEvent, ParkingsState>{
       switch(event) {
         case GetParkingById():
           try {
-            var parking = await ParkingRepository().getById(event.id);
+            var parking = await ParkingRepository().readById(event.id);
             if(parking != null) {
-              emit(GetParkingByIdSuccess(parking: parking));
+              emit(ParkingsSuccess(parkingsList: [parking]));
             } else {
               emit(ParkingsError());
             }
@@ -87,9 +66,9 @@ class ParkingsBloc extends Bloc<ParkingsEvent, ParkingsState>{
 
         case GetParkingsByUser():
           try {
-            var parkingsList = await ParkingRepository().getAllByVehicleOwnerEmail(event.user.email!);
+            var parkingsList = await ParkingRepository().readByVehicleOwnerEmail(event.user.email!);
             if(parkingsList != null) {
-              emit(GetParkingsByUserSuccess(parkingsList: parkingsList));
+              emit(ParkingsSuccess(parkingsList: parkingsList));
             } else {
               emit(ParkingsError());
             }
@@ -99,9 +78,9 @@ class ParkingsBloc extends Bloc<ParkingsEvent, ParkingsState>{
 
         case GetAllParkings():
           try {
-            var parkingsList = await ParkingRepository().getAll();
+            var parkingsList = await ParkingRepository().read();
             if(parkingsList != null) {
-              emit(GetAllParkingsSuccess(parkingsList: parkingsList));
+              emit(ParkingsSuccess(parkingsList: parkingsList));
             } else {
               emit(ParkingsError());
             }
@@ -111,9 +90,10 @@ class ParkingsBloc extends Bloc<ParkingsEvent, ParkingsState>{
           
         case StartParking():
           try {
-            var newParking = await ParkingRepository().add(Parking(vehicle: event.parking.vehicle, parkingSpace: event.parking.parkingSpace, startTime: event.parking.startTime));
+            var newParking = await ParkingRepository().create(Parking(vehicle: event.parking.vehicle, parkingSpace: event.parking.parkingSpace, startTime: event.parking.startTime));
             if(newParking != null) {
-              emit(StartParkingSuccess(parking: newParking));
+              var parkingsList = await ParkingRepository().read();
+              emit(ParkingsSuccess(parkingsList: parkingsList));
             } else {
               emit(ParkingsError());
             }
@@ -125,7 +105,8 @@ class ParkingsBloc extends Bloc<ParkingsEvent, ParkingsState>{
           try {
             var updatedParking = await ParkingRepository().update(event.parking.id, event.parking);
             if(updatedParking != null) {
-              emit(UpdateParkingSuccess(parking: updatedParking));
+              var parkingsList = await ParkingRepository().read();
+              emit(ParkingsSuccess(parkingsList: parkingsList));
             } else {
               emit(ParkingsError());
             }
