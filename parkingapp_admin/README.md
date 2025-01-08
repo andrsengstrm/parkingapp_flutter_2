@@ -1,4 +1,4 @@
-# Parkingapp_admin v2
+# Parkingapp_admin
 
 Windowsapp för att hantera parkeringar. 
 
