@@ -22,8 +22,11 @@ void main() {
     ParkingSpace parkingSpace = ParkingSpace(address: "Some address", pricePerHour: 10);
     Parking newParking = Parking(vehicle: vehicle, parkingSpace: parkingSpace, startTime: "Some startTime");
 
-    setUpAll((){
+    setUp((){
        parkingRepository = MockParkingRepository();
+    });
+
+    setUpAll((){
        registerFallbackValue(FakeParking());
     });
 

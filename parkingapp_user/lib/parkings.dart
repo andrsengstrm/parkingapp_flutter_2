@@ -29,10 +29,10 @@ class ParkingsView extends StatelessWidget {
 
   Widget parkingsMainView(BuildContext context, Person user) {
 
-    context.read<ParkingsBloc>().add(ReadParkingsByUser(user:user));
+    context.read<ParkingsBloc>().add(ReadAllParkings());
     context.read<VehiclesBloc>().add(ReadVehiclesByOwnerEmail(user:user));
     context.read<ParkingSpacesBloc>().add(ReadAllParkingSpaces());
-    context.read<ParkingsBloc>().add(ReadAllParkings());
+    //
 
     return Column(
       children: [
@@ -116,14 +116,17 @@ class _ParkingsList extends StatelessWidget {
 
     var state = context.watch<ParkingsBloc>().state;
     switch(state) {
+      case ParkingsLoading():
+        return const CircularProgressIndicator(strokeWidth: 1);
       case ParkingsSuccess(parkingsList: var list): 
-        return parkingsList(context, list);
+        return parkingsList(context, user, list); 
       default: 
         return const SizedBox.shrink();
     }
   }
 
-  Widget parkingsList(BuildContext context, list) {
+  Widget parkingsList(BuildContext context, user, list) {
+    list = list.where((p) => p.vehicle.owner.email == user.email).toList();
     var activeParkings = list.where((p) => p.endTime == null).toList();
     var finishedParkings = list.where((p) => p.endTime != null).toList();
     return SingleChildScrollView(

@@ -16,8 +16,11 @@ void main() {
     late PersonRepository personRepository;
     Person person = Person(personId: "Some personId", name: "Some name", email: "Some email");
 
-    setUpAll((){
+    setUp((){
        personRepository = MockPersonRepository();
+    });
+
+    setUpAll((){
        registerFallbackValue(FakePerson());
     });
 

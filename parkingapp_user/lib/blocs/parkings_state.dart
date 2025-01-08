@@ -25,8 +25,9 @@ final class ParkingsSuccess extends ParkingsState {
 }
 
 final class ParkingsError extends ParkingsState {
-  ParkingsError();
+  final String? error;
+  ParkingsError({ this.error });
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [error];
 }

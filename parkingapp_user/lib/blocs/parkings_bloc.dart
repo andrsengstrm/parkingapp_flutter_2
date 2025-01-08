@@ -20,7 +20,7 @@ class ParkingsBloc extends Bloc<ParkingsEvent, ParkingsState>{
               var parkingsList = await repository!.readByVehicleOwnerEmail(newParking.vehicle!.owner!.email);
               emit(ParkingsSuccess(parkingsList: parkingsList));
             } else {
-              emit(ParkingsError());
+              emit(ParkingsError(error: "Error! Could not create parking"));
             }
 
           case ReadParkingById():
@@ -28,23 +28,25 @@ class ParkingsBloc extends Bloc<ParkingsEvent, ParkingsState>{
             if(parking != null) {
               emit(ParkingsSuccess(parkingsList: [parking]));
             } else {
-              emit(ParkingsError());
+              emit(ParkingsError(error: "Error! Could not read parking"));
             }
 
           case ReadParkingsByUser():
+            emit(ParkingsLoading());
             var parkingsList = await repository!.readByVehicleOwnerEmail(event.user.email);
             if(parkingsList != null) {
               emit(ParkingsSuccess(parkingsList: parkingsList));
             } else {
-              emit(ParkingsError());
+              emit(ParkingsError(error: "Error! Could not read parkings"));
             }
 
           case ReadAllParkings():
+            emit(ParkingsLoading());
             var parkingsList = await repository!.read();
             if(parkingsList != null) {
               emit(ParkingsSuccess(parkingsList: parkingsList));
             } else {
-              emit(ParkingsError());
+              emit(ParkingsError(error: "Error! Could not read parkings"));
             }
 
           case UpdateParking():  
@@ -53,12 +55,12 @@ class ParkingsBloc extends Bloc<ParkingsEvent, ParkingsState>{
               var parkingsList = await ParkingRepository().readByVehicleOwnerEmail(updatedParking.vehicle!.owner!.email);
               emit(ParkingsSuccess(parkingsList: parkingsList));
             } else {
-              emit(ParkingsError());
+              emit(ParkingsError(error: "Error! Could not update parking"));
             }
         
         }
       } catch(err) {
-        emit(ParkingsError());
+        emit(ParkingsError(error: "Error! ${err.toString()}"));
       }
     });
   }

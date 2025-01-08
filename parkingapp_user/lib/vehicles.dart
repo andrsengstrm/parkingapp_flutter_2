@@ -47,6 +47,8 @@ class _VehiclesList extends StatelessWidget {
 
     var state = context.watch<VehiclesBloc>().state;
     switch(state) {
+      case VehiclesLoading():
+        return const CircularProgressIndicator(strokeWidth: 1);
       case VehiclesSuccess(vehiclesList: var list): 
         return vehiclesList(context, list);
       default: 

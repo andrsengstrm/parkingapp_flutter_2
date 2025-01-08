@@ -22,8 +22,11 @@ void main() {
     ParkingSpace parkingSpace = ParkingSpace(address: "Some address", pricePerHour: 10);
     Parking newParking = Parking(vehicle: vehicle, parkingSpace: parkingSpace, startTime: "Some startTime");
 
-    setUpAll((){
+    setUp((){
        parkingRepository = MockParkingRepository();
+    });
+
+    setUpAll((){
        registerFallbackValue(FakeParking());
     });
 
@@ -44,20 +47,22 @@ void main() {
         verify(() => parkingRepository.create(any())).called(1);
       }
     );
+    
 
     blocTest<ParkingsBloc, ParkingsState>(
-      'Test that ReadParkingById emits ParkingsError when null is returned',
+      'Test that ReadParkingsByUser emits ParkingsError when null is returned',
       setUp: (){
-        when(() => parkingRepository.readById(any()))
+        when(() => parkingRepository.readByVehicleOwnerEmail(any()))
           .thenAnswer((_) async => null);
       },
       build: () => ParkingsBloc(repository: parkingRepository),
-      act: (bloc) => bloc.add(ReadParkingById(id:1)),
+      act: (bloc) => bloc.add(ReadParkingsByUser(user: owner)),
       expect: () => [
-        ParkingsError()
+        ParkingsLoading(),
+        isA<ParkingsError>()
       ],
       verify: (_) {
-        verify(() => parkingRepository.readById(any())).called(1);
+        verify(() => parkingRepository.readByVehicleOwnerEmail(any())).called(1);
       }
     );
 

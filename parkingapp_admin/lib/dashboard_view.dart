@@ -153,7 +153,7 @@ class _FreeParkingSpacesCount extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text("Antal lediga parkeringar"),
+            const Text("Antal lediga parkeringsplatser"),
             Text(getAvaibleParkingSpaces(parkingsList, parkingSpacesList).length.toString(), style: const TextStyle(fontSize: 42))
           ],
         ),
@@ -214,7 +214,7 @@ class _TotalParkingSpacesCount extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text("Totalt antal parkeringar"),
+            const Text("Totalt antal parkeringsplatser"),
             Text(parkingSpacesList.length.toString(), style: const TextStyle(fontSize: 42))
           ],
         ),

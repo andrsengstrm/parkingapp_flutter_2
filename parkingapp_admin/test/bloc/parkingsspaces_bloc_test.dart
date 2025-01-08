@@ -16,8 +16,11 @@ void main() {
     late ParkingSpaceRepository parkingSpaceRepository;
     ParkingSpace parkingSpace = ParkingSpace(address: "Some address", pricePerHour: 10);
 
-    setUpAll((){
+    setUp((){
        parkingSpaceRepository = MockParkingSpacesRepository();
+    });
+
+    setUpAll((){
        registerFallbackValue(FakeParkingSpace());
     });
 

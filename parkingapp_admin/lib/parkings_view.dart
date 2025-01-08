@@ -7,33 +7,6 @@ class ParkingsView extends StatelessWidget {
   
   const ParkingsView({super.key});
 
-  /*
-  late Future<List<Parking>?> activeParkingsList;
-  late Future<List<Parking>?> finishedParkingsList;
-
-  Future<List<Parking>> getActiveParkingsList() async {
-    var parkingsList = await ParkingRepository().getAll();
-    parkingsList = parkingsList!.where((p) => p.endTime == null).toList();
-    return parkingsList;
-  }
-
-  Future<List<Parking>> getFinishedParkingsList() async {
-    var parkingsList = await ParkingRepository().getAll();
-    parkingsList = parkingsList!.where((p) => p.endTime != null).toList();
-    return parkingsList;
-  }
-
-  Parking? selectedItem;
-
-  @override
-  void initState() {
-    super.initState();
-    activeParkingsList = getActiveParkingsList();
-    finishedParkingsList = getFinishedParkingsList();
-  }
- */
-
-
   @override
   Widget build(BuildContext context) {
 
@@ -329,7 +302,15 @@ showAlertDialog(BuildContext context, Parking selectedParking) {
     // set up the AlertDialog
   AlertDialog alert = AlertDialog(
     title:  Text(selectedParking.vehicle!.regId),
-    content: Text("Parkeringens aktuella saldo: ${selectedParking.getCostForParking()} kr"),
+    content: Wrap(
+      direction: Axis.vertical,
+      spacing: 4,
+      children: [
+        Text("Fordonstyp: ${selectedParking.vehicle!.vehicleType}"),
+        Text("Fordonets ägare: ${selectedParking.vehicle!.owner!.name}"),
+        Text("Parkeringens aktuella saldo: ${selectedParking.getCostForParking()} kr"),
+      ],
+    ),
     actions: [
       okButton,
     ],

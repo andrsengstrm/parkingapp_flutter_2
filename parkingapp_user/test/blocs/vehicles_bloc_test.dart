@@ -16,8 +16,11 @@ void main() {
     late VehicleRepository vehicleRepository;
     Vehicle newVehicle = Vehicle(regId: "some regId", vehicleType: "some vehicleType");
 
-    setUpAll((){
+    setUp((){
        vehicleRepository = MockVehicleRepository();
+    });
+
+    setUpAll((){
        registerFallbackValue(FakeVehicle());
     });
 
