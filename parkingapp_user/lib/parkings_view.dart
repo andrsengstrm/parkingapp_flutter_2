@@ -4,7 +4,7 @@ import 'package:parkingapp_user/blocs/auth_bloc.dart';
 import 'package:parkingapp_user/blocs/parkings_bloc.dart';
 import 'package:parkingapp_user/blocs/parkingspaces_bloc.dart';
 import 'package:parkingapp_user/blocs/vehicles_bloc.dart';
-import 'package:parkingapp_user/login.dart';
+import 'package:parkingapp_user/login_view.dart';
 import 'package:provider/provider.dart';
 import 'package:shared/helpers/helpers.dart';
 import 'package:shared/models/parking.dart';
@@ -126,9 +126,9 @@ class _ParkingsList extends StatelessWidget {
   }
 
   Widget parkingsList(BuildContext context, user, list) {
-    list = list.where((p) => p.vehicle.owner.email == user.email).toList();
-    var activeParkings = list.where((p) => p.endTime == null).toList();
-    var finishedParkings = list.where((p) => p.endTime != null).toList();
+    var userParkingsList = list.where((p) => p.vehicle.owner.email == user.email).toList();
+    var activeParkings = userParkingsList.where((p) => p.endTime == null).toList();
+    var finishedParkings = userParkingsList.where((p) => p.endTime != null).toList();
     return SingleChildScrollView(
       child: Container(
         padding: const EdgeInsets.all(16),

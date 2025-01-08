@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parkingapp_user/blocs/auth_bloc.dart';
 import 'package:parkingapp_user/blocs/persons_bloc.dart';
-import 'package:parkingapp_user/login.dart';
+import 'package:parkingapp_user/login_view.dart';
 import 'package:shared/models/person.dart';
 
 class AccountView extends StatelessWidget {
@@ -10,7 +10,6 @@ class AccountView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //final PersonsState state = context.watch<PersonsBloc>().state;
     final AuthState authState = context.watch<AuthBloc>().state;
     switch(authState) {
       case AuthSuccess(user: Person user):
@@ -87,10 +86,11 @@ class AccountView extends StatelessWidget {
               onPressed: () async {
                 if (formKey.currentState!.validate()) {
                   formKey.currentState!.save();
-                  var updatedPerson = Person(id: user.id, name: user.name, personId: user.personId, email: user.email);
-                  //var personReturned = await PersonRepository().update(updatedPerson.id, updatedPerson);    
-                  context.read<PersonsBloc>().add(UpdatePerson(person: updatedPerson));
-
+                  var updatedPerson = Person(id: user.id, name: user.name, personId: user.personId, email: user.email);    
+                  if(context.mounted) {
+                    context.read<PersonsBloc>().add(UpdatePerson(person: updatedPerson));
+                  }
+                  
                 } 
               },
               child: const Text("Spara"),

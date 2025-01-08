@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parkingapp_user/blocs/auth_bloc.dart';
 import 'package:parkingapp_user/blocs/vehicles_bloc.dart';
-import 'package:parkingapp_user/login.dart';
+import 'package:parkingapp_user/login_view.dart';
 import 'package:shared/models/person.dart';
 import 'package:shared/models/vehicle.dart';
 
